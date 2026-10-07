@@ -61,6 +61,7 @@
   --gutter: 16px;
   --wave-h: 40vh;           /* §6.3.3 ~40vh */
   --wave-min-h: 180px;      /* E29 */
+  --scroll-hint-h: 72px;    /* DD-079 fade height of the "more below" hint */
 
   /* Motion — DD-027 */
   --dur-fast: 180ms;

@@ -40,6 +40,7 @@ export const S = {
     home: 'Home',
     continue: 'Continue',
     optional: '(optional)',
+    moreBelow: 'More below',
     /** @param {number} n */
     charsLeft: (n) => `${n} characters left`,
   },

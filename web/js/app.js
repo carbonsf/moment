@@ -8,6 +8,7 @@ import { parseHash, navigate, isMomentRoute } from './router.js';
 import { h, clear, link, cssMs, reducedMotion } from './ui/dom.js';
 import { icon } from './ui/icons.js';
 import { openSheet, closeSheet } from './ui/sheet.js';
+import { initScrollHint } from './ui/scrollhint.js';
 import { resourcesFor } from './content/resources.js';
 import { ensureIdentity } from './services/identity.js';
 import { loadPushState } from './services/push.js';
@@ -34,6 +35,7 @@ const header = h('header', { class: 'topbar' }, backSlot, helpLink);
 const banners = h('div', { class: 'banners', role: 'region', 'aria-label': S.appName });
 const main = h('main', { id: 'main', class: 'main' });
 root.append(header, banners, main);
+const updateScrollHint = initScrollHint(main);
 
 /** @type {HTMLElement|null} */
 let current = null;
@@ -133,6 +135,7 @@ function swap(view) {
     main.append(view);
   }
   window.scrollTo(0, 0);
+  updateScrollHint();
   const t = /** @type {HTMLElement|null} */ (view.querySelector('h1'));
   t?.focus({ preventScroll: true });
 }

@@ -3,7 +3,7 @@
 'use strict';
 
 // Bump on every deploy; must match APP_VERSION in js/config.js.
-const CACHE_VERSION = 'moment-1.0.1';
+const CACHE_VERSION = 'moment-1.0.2';
 
 const PRECACHE = [
   './',
@@ -34,6 +34,7 @@ const PRECACHE = [
   './js/ui/chips.js',
   './js/ui/sheet.js',
   './js/ui/chart.js',
+  './js/ui/scrollhint.js',
   './js/services/api.js',
   './js/services/checkins.js',
   './js/services/feedback.js',

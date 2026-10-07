@@ -303,3 +303,22 @@ select.input { appearance: none; -webkit-appearance: none; background-image: non
 
 /* Decide sub-screens */
 .thought-body, .plans { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+/* ---------- Scroll hint (DD-079): fade + chevron while content continues below the fold */
+.scroll-hint {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
+  height: calc(var(--scroll-hint-h) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  display: flex; align-items: flex-end; justify-content: center;
+  background: linear-gradient(to bottom, transparent, var(--c-bg) 65%);
+  pointer-events: none;
+  opacity: 0; transition: opacity var(--dur-fast) var(--ease-out);
+}
+.scroll-hint.is-visible { opacity: 1; }
+.scroll-hint-btn {
+  pointer-events: none;
+  width: var(--tap-min); height: var(--tap-min); margin-bottom: var(--sp-1);
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 0; border-radius: var(--r-pill); background: none; color: var(--c-text); cursor: pointer;
+}
+.scroll-hint.is-visible .scroll-hint-btn { pointer-events: auto; }
