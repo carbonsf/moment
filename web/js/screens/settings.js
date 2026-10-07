@@ -12,7 +12,7 @@ import { syncStatus, syncNow } from '../services/syncer.js';
 import { supportEnabled, getSupportPerson, saveSupportPerson } from '../services/support.js';
 import { ago } from './_shared.js';
 import { ITEMS } from './setup.js';
-import { VISUAL_IDS } from '../ui/breath/index.js';
+import { CHOICES } from '../ui/breath/index.js';
 
 /** @param {string} label @param {boolean} on @param {(v:boolean)=>void} onChange @param {string} id */
 function toggle(label, on, onChange, id) {
@@ -48,7 +48,7 @@ function timeField(label, value, onChange, id) {
 /** Breath visual choice (DD-081). @param {string} value @param {(v:string)=>void} onChange */
 function breathPicker(value, onChange) {
   const sel = /** @type {HTMLSelectElement} */ (h('select', { class: 'input', id: 'set-breath' },
-    VISUAL_IDS.map((id) => h('option', { value: id }, S.settings.breathVisuals[/** @type {'wave'} */ (id)] || id))));
+    CHOICES.map((id) => h('option', { value: id }, S.settings.breathVisuals[/** @type {'wave'} */ (id)] || id))));
   sel.value = value;
   sel.addEventListener('change', () => onChange(sel.value));
   return h('div', { class: 'field' }, h('label', { for: 'set-breath', class: 'field-label' }, S.settings.breathVisual), sel);

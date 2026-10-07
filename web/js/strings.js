@@ -465,6 +465,8 @@ export const S = {
       shallows: 'Shallows',
       pendulum: 'Pendulum',
       murmuration: 'Murmuration',
+      random: 'Random',
+      cycle: 'Cycling',
     },
     setup: 'Setup',
     data: 'Your data',

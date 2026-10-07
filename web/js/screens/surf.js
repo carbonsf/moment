@@ -38,7 +38,7 @@ export async function render(view, ctx) {
   const canvas = /** @type {HTMLCanvasElement} */ (h('canvas', { class: 'wave-canvas', role: 'img', 'aria-label': S.surf.waveLabel }));
   const waveSummary = h('p', { class: 'sr-only', 'aria-live': 'polite' });
   const wave = createWave({
-    canvas, plot: true, visual: resolveVisual(app.settings.breathVisual),
+    canvas, plot: true, visual: resolveVisual(app.settings.breathVisual, m),
     getState: () => ({ startedAt: m.startedAt, ratings: m.ratings, delayTargetMs: delayTargetMs(m) }),
   });
   ctx.onCleanup(() => wave.destroy());

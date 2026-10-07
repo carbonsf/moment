@@ -6,6 +6,7 @@
 import { uuid } from './lib/crypto.js';
 import { computeMomentMetrics } from './lib/metrics.js';
 import { MIN, HOUR } from './lib/time.js';
+import { pickVisualForMoment } from './ui/breath/index.js';
 import {
   DISTRACT_DEFAULTS, TRIGGER_DEFAULTS, THOUGHT_DEFAULTS, SETTINGS_DEFAULTS, PROFILE_DEFAULTS,
 } from './content/defaults.js';
@@ -178,6 +179,9 @@ export async function startMoment(opts = {}) {
     const recent = (await app.db.list('moments')).filter((m) => m.endedAt && now - m.endedAt < CHAIN_MS).sort((a, b) => b.endedAt - a.endedAt)[0];
     if (recent) prev = recent.id;
   }
+  // Random / Cycling breathing visual: chosen once per moment (DD-082).
+  const pick = pickVisualForMoment(app.settings.breathVisual, (await app.db.getMeta('breathCycle')) ?? -1);
+  if (pick) await app.db.setMeta('breathCycle', pick.index);
   const m = {
     id: uuid(),
     startedAt: now,
@@ -198,12 +202,13 @@ export async function startMoment(opts = {}) {
     seeking: null,
     checkinsAccepted: false,
     metrics: null,
-    // Additions (DD-042): resume route, delay extensions, rule bookkeeping, close progress.
+    // Additions (DD-042): resume route, delay extensions, rule bookkeeping, close progress; DD-082 visual.
     lastRoute: '#/moment',
     delayExtraMin: 0,
     risingShownAt: null,
     longShown: false,
     closeStage: null,
+    breathVisual: pick ? pick.id : null,
   };
   await app.db.put('moments', m);
   bus.emit('moment:start', m);

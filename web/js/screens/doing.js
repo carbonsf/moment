@@ -23,7 +23,7 @@ export async function render(view, ctx) {
   const since = use ? use.startedAt : Date.now();
 
   const canvas = /** @type {HTMLCanvasElement} */ (h('canvas', { class: 'wave-canvas wave-ambient', 'aria-hidden': 'true' }));
-  const wave = createWave({ canvas, plot: false, visual: resolveVisual(app.settings.breathVisual), getState: () => ({ startedAt: m.startedAt, ratings: [], delayTargetMs: 0 }) });
+  const wave = createWave({ canvas, plot: false, visual: resolveVisual(app.settings.breathVisual, m), getState: () => ({ startedAt: m.startedAt, ratings: [], delayTargetMs: 0 }) });
   ctx.onCleanup(() => wave.destroy());
 
   const elapsedEl = h('p', { class: 'muted elapsed' });
