@@ -724,3 +724,10 @@ describe('webpush', () => {
       'DGv6ra1nlYgDCS1FRnbzlwAAEABBBP4z9KsN6nGRTbVYI_c7VJSPQTBtkgcy27mlmlMoZIIgDll6e3vCYLocInmYWAmS6TlzAC8wEqKK6PBru3jl7A_yl95bQpu6cVPTpK4Mqgkf1CXztLVBSt2Ks3oZwbuwXPXLWyouBWLVWGNWQexSgSxsj_Qulcy4a-fN');
   });
 });
+
+test('VAPID subject gets mailto: when missing', async () => {
+  const { normalizeSubject } = await import('../worker/src/webpush.js');
+  assert.equal(normalizeSubject('me@example.com'), 'mailto:me@example.com');
+  assert.equal(normalizeSubject(' mailto:me@example.com '), 'mailto:me@example.com');
+  assert.equal(normalizeSubject('https://example.com'), 'https://example.com');
+});

@@ -106,6 +106,15 @@ export function importVapidKey(jwkJson) {
 }
 
 /**
+ * VAPID `sub` must be a mailto: or https: URI (Apple rejects bare addresses); add mailto: when missing. DD-078
+ * @param {string} sub
+ */
+export function normalizeSubject(sub) {
+  const s = String(sub || '').trim();
+  return /^(mailto|https):/i.test(s) ? s : `mailto:${s}`;
+}
+
+/**
  * Signs an RFC 8292 VAPID JWT (ES256). WebCrypto ECDSA output is already r||s (JWS format).
  * @param {string} aud push service origin
  * @param {string} sub VAPID_SUBJECT (mailto:)
@@ -140,7 +149,7 @@ export async function vapidAuthorization(env, audience, now, memo) {
     jwt = row.jwt;
   } else {
     const exp = nowSec + JWT_TTL;
-    jwt = await signVapidJwt(audience, env.VAPID_SUBJECT, exp, privateKey);
+    jwt = await signVapidJwt(audience, normalizeSubject(env.VAPID_SUBJECT), exp, privateKey);
     await env.DB.prepare(
       'INSERT INTO vapid_cache (audience, jwt, exp) VALUES (?1, ?2, ?3) ' +
       'ON CONFLICT (audience) DO UPDATE SET jwt = excluded.jwt, exp = excluded.exp'

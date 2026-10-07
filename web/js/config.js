@@ -2,13 +2,13 @@
 /** App configuration. Edit API_BASE / VAPID_PUBLIC_KEY after deploying the Worker (see README). */
 
 /** Worker base URL, no trailing slash. Must also be listed in index.html CSP connect-src. */
-export const API_BASE = 'https://moment-api.USERNAME.workers.dev';
+export const API_BASE = 'https://moment-api.davidmgoehring.workers.dev';
 
 /** VAPID public key (uncompressed P-256 point, base64url). Generate with `npm run vapid` in /worker. */
 export const VAPID_PUBLIC_KEY = 'BFVQzKI2uDcjsJ9MUX72zIw4JHXTuBBxfgy4z96grRAzwnUumAU0fxcwMTnJwzTOgjy6r0upxTWhrD11MxdhWys';
 
 /** Must match CACHE_VERSION in sw.js. */
-export const APP_VERSION = '1.0.0';
+export const APP_VERSION = '1.0.1';
 
 /** §18 feature flags. */
 export const FLAGS = {

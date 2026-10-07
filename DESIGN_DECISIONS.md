@@ -82,3 +82,4 @@ DD-001–DD-035 are the seed from the spec (Appendix A). DD-036 onward were made
 | DD-075 | The spec's iOS "turn on in iOS Settings" text is shown for any denied permission | One fix path; the owner's platform is iOS | `screens/settings.js` |
 | DD-076 | Dismissing the "didn't get a check-out" line is remembered per moment id | A later unfinished moment still gets offered | `screens/home.js` |
 | DD-077 | A quota error mid-session switches to memory mode and carries current data over, with the persistent banner | E19 without losing the session's work | `db.fallbackToMemory()` |
+| DD-078 | The Worker prefixes `mailto:` to `VAPID_SUBJECT` when it has no scheme | Apple's push service rejects a bare email as the VAPID subject; avoids a silent push failure from a common setup slip | `normalizeSubject()` in `worker/src/webpush.js` |

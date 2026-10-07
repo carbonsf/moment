@@ -2,6 +2,8 @@
 name = "moment-api"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
+workers_dev = true
+preview_urls = false
 
 # Secrets (NOT in this file) — set once with:
 #   npx wrangler secret put VAPID_PRIVATE_JWK   # JSON of the P-256 private JWK from `npm run vapid`
