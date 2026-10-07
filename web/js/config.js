@@ -8,7 +8,7 @@ export const API_BASE = 'https://moment-api.davidmgoehring.workers.dev';
 export const VAPID_PUBLIC_KEY = 'BFVQzKI2uDcjsJ9MUX72zIw4JHXTuBBxfgy4z96grRAzwnUumAU0fxcwMTnJwzTOgjy6r0upxTWhrD11MxdhWys';
 
 /** Must match CACHE_VERSION in sw.js. */
-export const APP_VERSION = '1.0.2';
+export const APP_VERSION = '1.0.3';
 
 /** §18 feature flags. */
 export const FLAGS = {

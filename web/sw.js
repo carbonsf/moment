@@ -2,8 +2,8 @@
 /* global self, caches, clients */
 'use strict';
 
-// Bump on every deploy; must match APP_VERSION in js/config.js.
-const CACHE_VERSION = 'moment-1.0.2';
+// Bump on every deploy (the changed bytes are how browsers detect an update); must match APP_VERSION in js/config.js.
+const CACHE_VERSION = 'moment-1.0.3';
 
 const PRECACHE = [
   './',
@@ -43,6 +43,7 @@ const PRECACHE = [
   './js/services/push.js',
   './js/services/support.js',
   './js/services/syncer.js',
+  './js/services/updates.js',
   './js/services/wakelock.js',
   './js/content/defaults.js',
   './js/content/learn.js',

@@ -45,6 +45,12 @@ export const S = {
     charsLeft: (n) => `${n} characters left`,
   },
 
+  update: {
+    ready: 'A new version of Moment is ready.',
+    now: 'Update',
+    later: 'Later',
+  },
+
   banners: {
     memoryMode: 'Saving is off in this browser mode.',
     browserTab: 'Data here stays in this browser tab.',

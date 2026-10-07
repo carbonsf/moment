@@ -16,6 +16,7 @@ import { startSync } from './services/syncer.js';
 import { checkTimeZone, findDueCheckin, cancelDueSoon } from './services/checkins.js';
 import { getSupportPerson, supportHref } from './services/support.js';
 import { holdWakeLock, releaseWakeLock } from './services/wakelock.js';
+import { watchForUpdates, updateReady, updateState, applyUpdate, dismissUpdate } from './services/updates.js';
 
 /**
  * @typedef {{
@@ -61,9 +62,17 @@ export function openHelp() {
   openSheet({ title: S.help.title, content: [h('ul', { class: 'help-list' }, items), h('p', { class: 'muted small' }, res.footer)] });
 }
 
-/** Persistent banners (E12, E19). */
+/** Persistent banners (E12, E19, DD-080). @param {string} routeName */
 async function renderBanners(routeName) {
   clear(banners);
+  // Update prompt: never during a moment (E18); "Later" hides it until next launch.
+  if (updateReady() && !updateState.dismissed && !isMomentRoute(routeName) && !(await getActiveMoment())) {
+    banners.append(h('div', { class: 'banner banner-update', role: 'status' },
+      h('span', { class: 'banner-text' }, S.update.ready),
+      h('span', { class: 'banner-actions' },
+        h('button', { type: 'button', class: 'btn btn-small btn-update', on: { click: applyUpdate } }, S.update.now),
+        h('button', { type: 'button', class: 'btn btn-text btn-small', on: { click: dismissUpdate } }, S.update.later))));
+  }
   if (app.db.memoryMode) {
     banners.append(h('div', { class: 'banner' }, icon('info'), h('span', null, S.banners.memoryMode, ' '), link(S.banners.exportNow, '#/settings')));
   }
@@ -146,7 +155,7 @@ function detectPlatform() {
   app.standalone = /** @type {any} */ (navigator).standalone === true || !!window.matchMedia?.('(display-mode: standalone)').matches;
 }
 
-/** Service worker with deferred updates: never reload mid-moment (E18). */
+/** Service worker; updates are prompted, never applied mid-moment (E18, DD-080). */
 async function registerSW() {
   if (!('serviceWorker' in navigator)) return;
   try {
@@ -159,9 +168,8 @@ async function registerSW() {
       reloaded = true;
       location.reload();
     });
-    if (reg.waiting && navigator.serviceWorker.controller && !(await getActiveMoment())) {
-      reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-    }
+    // Updates wait for the person to say so (DD-080); no silent switch at launch.
+    watchForUpdates(reg);
     navigator.serviceWorker.addEventListener('message', (ev) => {
       // Notification tapped while the app is open (§7.4, E16).
       if (ev.data?.type === 'navigate' && typeof ev.data.hash === 'string') navigate(ev.data.hash);
@@ -210,6 +218,7 @@ async function boot() {
   bus.on('settings', applyMotion);
   bus.on('moment:start', () => { cancelDueSoon(); holdWakeLock(); });
   bus.on('moment:close', () => releaseWakeLock());
+  bus.on('update', () => { const r = parseHash(location.hash); if (r) renderBanners(r.name); });
   db.onChange((ev) => {
     // Another tab changed data (E17): re-render read-only screens.
     if (ev.remote && current) {
