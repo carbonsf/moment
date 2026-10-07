@@ -25,7 +25,12 @@
   --c-heat-4:        rgba(140,195,204,0.55);
 
   /* Type — DD-023: system font + Dynamic Type. */
-  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body: 'PT Sans', system-ui, -apple-system, "Segoe UI", sans-serif; /* DD-084 */
+  --font-display: 'Ovo', Georgia, serif;   /* DD-084 titles, guidance lines, labels — never numbers */
+  --fs-tide-title: 1.9375rem;
+  --fs-tide-num: 8.5rem;                    /* Start reading on the surface */
+  --c-tide-ink: #d6e4e6;                    /* text that sits on water */
+  --c-tide-ink-2: #a9bfc2;
   --fs-xs:  .8125rem;
   --fs-sm:  .9375rem;
   --fs-md:  1rem;

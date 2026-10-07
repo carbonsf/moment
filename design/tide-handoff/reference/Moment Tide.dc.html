@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ovo&family=PT+Sans:wght@400;700&display=swap">
+<style>html,body{margin:0;background:#0a0b0d;color:#e9e6df;font-family:'PT Sans',sans-serif;-webkit-font-smoothing:antialiased}a{color:#8cc3cc}a:hover{color:#d2b98f}*{-webkit-tap-highlight-color:transparent}</style>
+<script src="gl-core.js"></script>
+<script src="gl-shaders.js"></script>
+<script src="gl-tide.js"></script>
+</helmet>
+<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:40px 0">
+  <div ref="{{ rootRef }}" onPointerDown="{{ onDown }}" onPointerMove="{{ onMove }}" onPointerUp="{{ onUp }}" onPointerCancel="{{ onUp }}" style="position:relative;width:390px;height:844px;border-radius:52px;overflow:hidden;background:#0e1014;border:10px solid #050506;box-sizing:content-box;touch-action:none;user-select:none;cursor:{{ cursor }}">
+    <canvas data-gl="tide" data-tide="1" data-l=".3" data-p="1,0,1,0" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+    <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:122px;height:35px;border-radius:20px;background:#000;z-index:5"></div>
+
+    <div style="position:absolute;top:58px;left:24px;right:24px;display:flex;justify-content:space-between;align-items:center;font-size:15px;color:#b3b8bf;z-index:4">
+      <span onClick="{{ goStart }}" style="cursor:pointer">I'm done</span>
+      <span style="font-family:'Ovo';font-size:17px;display:flex;gap:12px">
+        <span onClick="{{ goSurf }}" style="cursor:pointer;transition:opacity .4s;opacity:{{ stepO.delay }}">Delay</span>
+        <span onClick="{{ goDistract }}" style="cursor:pointer;transition:opacity .4s;opacity:{{ stepO.distract }}">Distract</span>
+        <span style="opacity:.45">Decide</span>
+      </span>
+      <span>More help</span>
+    </div>
+
+    <div style="position:absolute;inset:0;transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1);opacity:{{ s.start.o }};transform:translateY({{ s.start.y }}px);pointer-events:{{ s.start.pe }}">
+      <div style="position:absolute;top:118px;left:28px;right:40px;font-family:'Ovo';font-size:31px;line-height:1.2">Where is it right now?</div>
+      <div data-ride="-176" style="position:absolute;top:0;left:26px;display:flex;align-items:baseline;gap:14px;transition:opacity .4s;opacity:{{ numO }}">
+        <span style="font-size:136px;line-height:1;letter-spacing:-.03em;color:{{ numColor }}">{{ startNum }}</span>
+        <span style="font-size:20px;color:#d2b98f">{{ startAnchor }}</span>
+      </div>
+      <div data-ride="-11" data-rx=".83" style="position:absolute;top:0;left:296px;width:56px;height:22px;border-radius:11px;background:rgba(233,230,223,.12);border:1px solid rgba(233,230,223,.4);display:flex;align-items:center;justify-content:center;gap:4px"><span style="width:4px;height:4px;border-radius:50%;background:#e9e6df"></span><span style="width:4px;height:4px;border-radius:50%;background:#e9e6df"></span><span style="width:4px;height:4px;border-radius:50%;background:#e9e6df"></span></div>
+      <div style="position:absolute;bottom:96px;left:0;right:0;text-align:center;font-size:16px;color:#d6e4e6">{{ startHint }}</div>
+      <div onClick="{{ goDistance }}" style="position:absolute;bottom:38px;left:50%;transform:translateX(-50%);padding:12px 24px;text-align:center;font-size:15px;color:#a9bfc2;cursor:pointer">Skip</div>
+    </div>
+
+    <div style="position:absolute;inset:0;transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1);opacity:{{ s.distance.o }};transform:translateY({{ s.distance.y }}px);pointer-events:{{ s.distance.pe }}">
+      <div style="position:absolute;top:118px;left:28px;right:40px;font-family:'Ovo';font-size:31px;line-height:1.2">First, some distance.</div>
+      <div style="position:absolute;top:172px;left:28px;right:48px;font-size:19px;line-height:1.45;color:#b3b8bf">If you can, move away from what set this off. Another room, outside, phone face down.</div>
+      <div style="position:absolute;bottom:58px;left:18px;right:18px;display:flex;gap:10px">
+        <span onClick="{{ goSurfDone }}" style="flex:1;height:56px;border-radius:28px;background:rgba(233,230,223,.1);border:1px solid rgba(140,195,204,.45);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;cursor:pointer" style-active="transform:scale(.97)">Done</span>
+        <span onClick="{{ goSurfSkip }}" style="flex:1;height:56px;border-radius:28px;background:rgba(233,230,223,.05);border:1px solid rgba(140,195,204,.25);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer" style-active="transform:scale(.97)">Not right now</span>
+      </div>
+    </div>
+
+    <div style="position:absolute;inset:0;transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1);opacity:{{ s.surf.o }};transform:translateY({{ s.surf.y }}px);pointer-events:{{ s.surf.pe }}">
+      <div onClick="{{ nextLine }}" style="position:absolute;top:116px;left:40px;right:40px;text-align:center;font-family:'Ovo';font-size:24px;line-height:1.3;cursor:pointer;transition:opacity .5s;opacity:{{ lineO }}">{{ line }}</div>
+      <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0;pointer-events:none">
+        <path d="{{ markD }}" fill="none" stroke="#d2b98f" stroke-width="1.5" stroke-opacity=".6" stroke-dasharray="2 5" stroke-linecap="round"></path>
+        <sc-for list="{{ marks }}" as="m" hint-placeholder-count="0"><circle cx="{{ m.x }}" cy="{{ m.y }}" r="3" fill="#d2b98f"></circle></sc-for>
+      </svg>
+      <div data-ride="8" style="position:absolute;top:0;left:26px;display:flex;align-items:baseline;gap:10px">
+        <span style="font-size:40px;line-height:1">{{ curNum }}</span><span style="font-size:15px;color:#d2b98f">{{ curAnchor }}</span>
+      </div>
+      <div data-ride="-34" data-rx=".8" style="position:absolute;top:0;right:30px;font-family:'Ovo';font-size:22px;color:#d6e4e6;letter-spacing:.04em"><span data-cue="1">in</span></div>
+      <div data-ride="84" style="position:absolute;top:0;left:0;right:0;display:flex;justify-content:center;align-items:baseline;gap:8px;color:#a9bfc2;font-size:15px">
+        <span>{{ timerPre }}</span><span style="font-size:42px;color:#e9e6df;line-height:1;letter-spacing:-.02em">{{ timerNum }}</span><span>{{ timerPost }}</span>
+      </div>
+      <div style="position:absolute;left:18px;right:18px;display:flex;gap:8px;transition:bottom .9s cubic-bezier(.2,.7,.2,1);bottom:{{ pillsBottom }}px">
+        <span onClick="{{ goDistract }}" style="flex:1;height:52px;border-radius:26px;background:rgba(233,230,223,.07);border:1px solid rgba(140,195,204,{{ pillA }});display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer" style-active="transform:scale(.96)">Try something</span>
+        <span style="flex:1;height:52px;border-radius:26px;background:rgba(233,230,223,.07);border:1px solid rgba(140,195,204,{{ pillA }});display:flex;align-items:center;justify-content:center;font-size:15px;opacity:.6">Talk it through</span>
+        <span onClick="{{ goStart }}" style="flex:1;height:52px;border-radius:26px;background:rgba(233,230,223,.07);border:1px solid rgba(140,195,204,{{ pillA }});display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer" style-active="transform:scale(.96)">It's eased</span>
+      </div>
+      <div onClick="{{ keepSurfing }}" style="position:absolute;bottom:56px;left:0;right:0;text-align:center;font-size:15px;color:#d6e4e6;cursor:pointer;transition:opacity .6s;opacity:{{ keepO }};pointer-events:{{ keepPe }}">Keep surfing</div>
+    </div>
+
+    <div style="position:absolute;inset:0;transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1);opacity:{{ s.distract.o }};transform:translateY({{ s.distract.y }}px);pointer-events:{{ s.distract.pe }}">
+      <div style="position:absolute;top:104px;left:28px;right:40px;font-family:'Ovo';font-size:23px;line-height:1.25;transition:opacity .4s;opacity:{{ listO }}">Pick one. Go do it. Come back when you're done.</div>
+      <div style="position:absolute;top:222px;left:0;right:0;bottom:96px;overflow-y:auto;scrollbar-width:none">
+        <div style="display:flex;flex-direction:column;gap:2px;padding:0 28px 40px">
+          <sc-for list="{{ opts }}" as="o" hint-placeholder-count="8">
+            <span onClick="{{ o.pick }}" style="padding:7px 0;cursor:pointer;font-size:{{ o.size }}px;color:{{ o.color }};opacity:{{ o.op }};filter:blur({{ o.blur }}px);transform:translateY({{ o.ty }}px) scale({{ o.sc }});transform-origin:left center;transition:transform .9s cubic-bezier(.3,.6,.2,1),opacity .7s,filter .7s,color .3s">{{ o.label }}</span>
+          </sc-for>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:40px;left:26px;right:26px;display:flex;justify-content:space-between;align-items:center;font-size:15px">
+        <span onClick="{{ toggleLow }}" style="display:flex;align-items:center;gap:10px;color:#e9e6df;white-space:nowrap;cursor:pointer;padding:8px 0"><span style="width:34px;height:20px;border-radius:10px;border:1px solid rgba(233,230,223,.4);position:relative;transition:background .3s;background:{{ lowBg }}"><span style="position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:#e9e6df;transition:transform .3s cubic-bezier(.2,.7,.2,1);transform:translateX({{ lowX }}px)"></span></span>Low energy</span>
+        <span style="color:#d6e4e6">+ Something else</span>
+      </div>
+    </div>
+
+    <div style="position:absolute;inset:0;transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform 1s cubic-bezier(.2,.7,.2,1);opacity:{{ s.doing.o }};transform:translateY({{ s.doing.y }}px);pointer-events:{{ s.doing.pe }}">
+      <div style="position:absolute;top:208px;left:24px;right:24px;text-align:center;font-family:'Ovo';font-size:{{ doingSize }}px;line-height:1.05">{{ doingTitle }}</div>
+      <div style="position:absolute;top:366px;left:0;right:0;text-align:center;font-size:21px;color:#b3b8bf">Go. I'll be here.</div>
+      <div style="position:absolute;top:404px;left:0;right:0;text-align:center;font-size:26px;color:#8a9099">{{ doingElapsed }} <span style="font-size:15px">so far</span></div>
+      <div data-ride="-48" style="position:absolute;top:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:6px">
+        <span style="font-size:17px;font-weight:700">{{ backLabel }}</span>
+        <span style="width:56px;height:22px;border-radius:11px;background:rgba(233,230,223,.12);border:1px solid rgba(233,230,223,.4)"></span>
+      </div>
+      <div data-ride="40" style="position:absolute;top:0;left:0;right:0;text-align:center;font-size:13px;color:#a9bfc2">Pull the water up to say where it is</div>
+      <div onClick="{{ goDistract }}" style="position:absolute;bottom:34px;left:50%;transform:translateX(-50%);padding:12px 20px;white-space:nowrap;font-size:15px;color:#d6e4e6;cursor:pointer">Pick something else</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:18px;font-size:14px;color:#8a9099">
+    <span onClick="{{ goStart }}" style="cursor:pointer" style-hover="color:#e9e6df">Start</span>
+    <span onClick="{{ goDistance }}" style="cursor:pointer" style-hover="color:#e9e6df">Distance</span>
+    <span onClick="{{ goSurf }}" style="cursor:pointer" style-hover="color:#e9e6df">Surf</span>
+    <span onClick="{{ goDistract }}" style="cursor:pointer" style-hover="color:#e9e6df">Distract</span>
+    <span onClick="{{ goDoingDemo }}" style="cursor:pointer" style-hover="color:#e9e6df">Doing</span>
+    <span style="color:#2e3540">|</span>
+    <span onClick="{{ nextStyle }}" style="cursor:pointer;color:#b3b8bf" style-hover="color:#e9e6df">Water: {{ styleName }} ↻</span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;waterStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Cycling&quot;,&quot;Random&quot;,&quot;Glass&quot;,&quot;Storm&quot;,&quot;Boil&quot;],&quot;default&quot;:&quot;Cycling&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;delayMinutes&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[5,10,15,20],&quot;default&quot;:15,&quot;tsType&quot;:&quot;number&quot;},&quot;slosh&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:2,&quot;step&quot;:0.1,&quot;default&quot;:1,&quot;tsType&quot;:&quot;number&quot;}}">
+const OPTS=[["Take a shower","low"],["Drink a glass of cold water","low"],["Eat something","low"],["Lie down under a blanket","low"],["Stretch for five minutes","low"],["Go to a different room","low"],["Step outside","low"],["Make tea","low"],["Tidy one small thing","low"],["Put on a show you've seen before","low"],["Listen to a podcast or album","low"],["Play a simple phone game","low"],["Text someone about anything else","low"],["Walk around the block","medium"],["Go somewhere public","medium"],["Wash the dishes","medium"]];
+const LINES=["You don't have to do anything with this. Just watch it.","Breathe with the wave. In as it rises, out as it falls.","Urges build, peak, and pass. You're watching one do that.","Still here. Still watching."];
+const ORDER=['start','distance','surf','distract','doing'];
+const anchor=v=>v<=0?'Nothing':v<=2?'Faint':v<=4?'Noticeable':v<=6?'Strong':v<=8?'Very strong':'Most ever';
+const LV=v=>.1+.08*v;
+const mmss=ms=>{ms=Math.max(0,ms);const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
+const STYLES=['glass','storm','boil'];const SNAME={glass:'Glass',storm:'Storm',boil:'Boil'};
+const NH=64;
+const BAMP={start:.012,distance:.03,surf:.05,distract:.012,doing:.03};
+const breathAt=(t)=>{const p=((t%10)+10)%10;const x=p<4?p/4:1-(p-4)/6;return {b:.5-.5*Math.cos(Math.PI*x),inh:p<4,p};};
+const BASE={start:[1,0,0,1],distance:[.8,.6,0,1],surf:[1.3,1,0,1],distract:[.6,0,0,1],doing:[.25,.4,.2,.4]};
+
+class Component extends DCLogic {
+  state={screen:'start',ratings:[],startedAt:Date.now(),extra:0,now:Date.now(),line:0,lineO:1,low:false,leaving:null,option:'Make tea',doingSince:Date.now(),dragV:null,style:'glass',cyc:0};
+  rootRef=React.createRef();
+  L=.3; vel=0; target=.3; dragging=false; H=new Float32Array(NH); HV=new Float32Array(NH); HB=new Uint8Array(NH); fx=.5; fL=.3; kick=0; bm=0;
+  pickStyle(cyc){const ws=this.props.waterStyle??'Cycling';if(ws==='Random')return STYLES[Math.floor(Math.random()*3)];if(ws==='Cycling')return STYLES[cyc%3];return ws.toLowerCase();}
+  sim(dt){
+    const H=this.H,V=this.HV,sub=4,d=dt/sub,sl=(this.props.slosh??1);
+    for(let s=0;s<sub;s++){
+      for(let i=0;i<NH;i++){const a=H[i>0?i-1:1],b=H[i<NH-1?i+1:NH-2];V[i]+=(2600*(a+b-2*H[i])-1.4*V[i]-3*H[i])*d;}
+      if(this.dragging){const rel=this.fL-this.L;for(let i=0;i<NH;i++){const g=Math.exp(-Math.pow((i/(NH-1)-this.fx)/.09,2));V[i]+=((rel-H[i])*g*60-V[i]*g*6)*d;}}
+      for(let i=0;i<NH;i++){H[i]+=V[i]*d;H[i]=Math.max(-.078,Math.min(.078,H[i]));}
+    }
+    this.kick-=dt;if(this.kick<0){this.kick=.25+Math.random()*.5;const i=1+Math.floor(Math.random()*(NH-2));V[i]+=(Math.random()-.5)*.25*sl*(BASE[this.state.screen][0]);}
+    for(let i=0;i<NH;i++)this.HB[i]=Math.max(0,Math.min(255,Math.round(128+H[i]/.08*127)));
+  }
+
+  componentDidMount(){
+    this.setState({style:this.pickStyle(0)});
+    this.iv=setInterval(()=>this.setState({now:Date.now()}),1000);
+    this.gv=setInterval(()=>{ if(this.state.screen==='surf') this.nextLine(); },14000);
+    let last=performance.now();
+    const loop=(ts)=>{
+      this.raf=requestAnimationFrame(loop);
+      const dt=Math.min(.05,(ts-last)/1000); last=ts;
+      const sl0=(this.props.slosh??1);
+      const k=this.dragging?40:14, c=this.dragging?12:5.5;
+      const pv=this.vel;
+      this.vel+=((this.target-this.L)*k-this.vel*c)*dt;
+      this.L+=this.vel*dt;
+      const acc=(this.vel-pv)/Math.max(dt,.001);
+      for(let i=0;i<NH;i++)this.HV[i]+=-acc*(i/(NH-1)-.5)*.05*sl0*dt;
+      this.sim(dt);
+      const br=breathAt(ts/1000);
+      this.bm+=(((this.dragging?0:1)*BAMP[this.state.screen])-this.bm)*Math.min(1,dt*1.5);
+      const LD=this.L+(br.b-.5)*this.bm;
+      const db=br.b-(this.pb??br.b);this.pb=br.b;
+      for(let i=0;i<NH;i++)this.HV[i]+=db*Math.cos(Math.PI*2*i/(NH-1))*this.bm*14;
+      const root=this.rootRef.current; if(!root) return;
+      const cv=root.querySelector('canvas[data-tide]');
+      const b=BASE[this.state.screen]; const sl=(this.props.slosh??1);
+      if(cv){cv.dataset.gl=this.state.style;cv._h=this.HB;cv.dataset.l=LD.toFixed(4);cv.dataset.p=`${b[0]},0,1,0`;cv.dataset.q=`${b[2]},0`;cv.dataset.s=b[3];}
+      root.querySelectorAll('[data-ride]').forEach(el=>{const hx=this.H[Math.round((+(el.dataset.rx||.5))*(NH-1))];el.style.transform=`translateY(${(1-LD-hx)*844+ +el.dataset.ride}px)`;});
+      const cue=root.querySelector('[data-cue]');if(cue){const ph=br.inh?br.p/4:(br.p-4)/6;cue.textContent=br.inh?'in':'out';cue.style.opacity=(Math.sin(Math.PI*Math.min(1,ph))*.9).toFixed(3);}
+    };
+    this.raf=requestAnimationFrame(loop);
+  }
+  componentWillUnmount(){clearInterval(this.iv);clearInterval(this.gv);cancelAnimationFrame(this.raf);clearTimeout(this.ct);}
+
+  lastV(){const r=this.state.ratings;return r.length?r[r.length-1].v:null;}
+  go(screen){
+    const v=this.lastV();
+    const tgt={start:v==null?.3:LV(v),distance:v==null?.4:LV(v),surf:v==null?.4:LV(v),distract:.78,doing:.24}[screen];
+    this.target=tgt;
+    const dir=tgt>this.L?1:-1;for(let i=0;i<NH;i++)this.HV[i]+=dir*Math.cos(Math.PI*i/(NH-1))*.35*(this.props.slosh??1);
+    this.setState({screen,leaving:null,dragV:null});
+  }
+  vFromEvent(e){const r=this.rootRef.current.getBoundingClientRect();const y=(e.clientY-r.top)/r.height;this.fx=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));const L=Math.min(.92,Math.max(.08,1-y));return {L,v:Math.max(0,Math.min(10,Math.round((L-.1)/.08)))};}
+  canDrag(){return ['start','surf','doing'].includes(this.state.screen);}
+  onDown=(e)=>{
+    if(!this.canDrag()) return;
+    for(let n=e.target;n&&n!==e.currentTarget;n=n.parentElement){ if(n.style&&n.style.cursor==='pointer') return; }
+    if(e.clientY-this.rootRef.current.getBoundingClientRect().top<100) return;
+    this.dragging=true; clearTimeout(this.ct);
+    try{e.currentTarget.setPointerCapture(e.pointerId);}catch(_){}
+    const {L,v}=this.vFromEvent(e); this.fL=L; this.target=L; this.setState({dragV:v});
+  };
+  onMove=(e)=>{ if(!this.dragging) return; const {L,v}=this.vFromEvent(e); this.fL=L; this.target=L; if(v!==this.state.dragV) this.setState({dragV:v}); };
+  onUp=()=>{
+    if(!this.dragging) return; this.dragging=false;
+    const v=this.state.dragV; if(v==null) return;
+    this.target=LV(v);
+    const add=(src)=>this.setState(s=>({ratings:[...s.ratings,{t:Date.now()-s.startedAt,v,src}]}));
+    const sc=this.state.screen;
+    if(sc==='start'){ this.ct=setTimeout(()=>{ this.setState(s=>({ratings:[...s.ratings.filter(r=>r.src!=='initial'),{t:0,v,src:'initial'}],dragV:null}),()=>this.go('distance')); },900); }
+    else if(sc==='surf'){ add('manual'); this.setState({dragV:null}); }
+    else if(sc==='doing'){ add('return'); this.ct=setTimeout(()=>this.go('surf'),700); }
+  };
+  nextLine=()=>{ this.setState({lineO:0}); setTimeout(()=>this.setState(s=>({line:(s.line+1)%LINES.length,lineO:1})),450); };
+  pick(label){
+    if(this.state.leaving) return;
+    this.setState({leaving:label});
+    setTimeout(()=>{ this.setState({option:label,doingSince:Date.now()}); this.go('doing'); },850);
+  }
+
+  renderVals(){
+    const st=this.state, sc=st.screen, idx=ORDER.indexOf(sc);
+    const s={}; ORDER.forEach((k,i)=>{s[k]={o:k===sc?1:0,y:k===sc?0:(i<idx?-24:24),pe:k===sc?'auto':'none'};});
+    const v=st.dragV!=null?st.dragV:this.lastV();
+    const delay=(this.props.delayMinutes??15)*60000+st.extra;
+    const elapsed=st.now-st.startedAt, left=delay-elapsed, up=left<=0;
+    const span=Math.max(delay,elapsed+120000);
+    const pts=st.ratings.map(r=>({x:+(18+(r.t/span)*354).toFixed(1),y:+((1-LV(r.v))*844).toFixed(1)}));
+    let d=''; pts.forEach((p,i)=>{ if(!i){d=`M${p.x} ${p.y}`;return;} const q=pts[i-1],mx=(q.x+p.x)/2; d+=` C${mx} ${q.y},${mx} ${p.y},${p.x} ${p.y}`; });
+    const shown=OPTS.filter(o=>!st.low||o[1]==='low');
+    const opts=shown.map(([label,eff],i)=>{
+      const depth=i/Math.max(1,shown.length-1), sel=st.leaving===label, other=st.leaving&&!sel;
+      return {label,pick:()=>this.pick(label),size:Math.round(25-depth*8),
+        color:sel?'#d2b98f':'#e9e6df',op:other?0:(sel?1:+(1-depth*.72).toFixed(2)),blur:other?4:+(Math.max(0,depth-.35)*3.5).toFixed(2),
+        ty:sel?-120:(other?30:0),sc:sel?1.25:1};
+    });
+    const go=(k)=>()=>this.go(k);
+    return {
+      rootRef:this.rootRef,onDown:this.onDown,onMove:this.onMove,onUp:this.onUp,
+      cursor:this.canDrag()?'ns-resize':'default',s,
+      stepO:{delay:['surf','start','distance'].includes(sc)?1:.45,distract:['distract','doing'].includes(sc)?1:.45},
+      startNum:st.screen==='start'&&v!=null?String(v):(v!=null&&st.screen!=='start'?String(v):'–'),
+      numColor:v==null?'#8a9099':'#e9e6df',startAnchor:v==null?'':anchor(v),
+      startHint:v==null?'Drag the waterline. Higher is stronger.':'Let go to keep it.',
+      line:LINES[st.line],lineO:st.lineO,nextLine:this.nextLine,
+      markD:d,marks:pts,curNum:v==null?'–':String(v),curAnchor:v==null?'Drag to say where it is':anchor(v),
+      timerPre:up?'':'Delay',timerNum:up?'':mmss(left),timerPost:up?"Delay time's up. Where is it now?":'left',
+      pillsBottom:up?104:58,pillA:up?'.7':'.3',keepO:up?1:0,keepPe:up?'auto':'none',
+      keepSurfing:()=>this.setState(s2=>({extra:s2.extra+(this.props.delayMinutes??15)*60000})),
+      opts,listO:st.leaving?0:1,low:st.low,toggleLow:()=>this.setState(s2=>({low:!s2.low})),lowX:st.low?14:0,lowBg:st.low?'rgba(140,195,204,.5)':'transparent',
+      doingTitle:st.option,doingSize:st.option.length>18?52:78,doingElapsed:mmss(st.now-st.doingSince),
+      backLabel:st.dragV!=null&&sc==='doing'?`${st.dragV} · ${anchor(st.dragV)}`:"I'm back",
+      goStart:()=>{this.setState(s2=>({ratings:[],startedAt:Date.now(),extra:0,cyc:s2.cyc+1,style:this.pickStyle(s2.cyc+1)}));this.go('start');},
+      nextStyle:()=>this.setState(s2=>({style:STYLES[(STYLES.indexOf(s2.style)+1)%3]})),styleName:SNAME[st.style],
+      numO:v==null?0:1,
+      goDistance:go('distance'),goSurf:go('surf'),goSurfDone:go('surf'),goSurfSkip:go('surf'),goDistract:go('distract'),
+      goDoingDemo:()=>{this.setState({doingSince:Date.now()});this.go('doing');},
+    };
+  }
+}
+</script>
+</body>
+</html>

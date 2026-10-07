@@ -1,18 +1,22 @@
 // @ts-check
-/** §6.3.5 Doing: option label large, ambient wave (no plot), elapsed time, "I'm back" → rating. */
+/**
+ * §6.3.5 Doing on the tide (DD-083). The water drains low and nearly still. "I'm back" rides the waterline:
+ * pulling the water up is the return rating (replaces the slider + save button of DD-054); tapping it returns without one.
+ */
 import { S } from '../strings.js';
 import { h, title, button } from '../ui/dom.js';
-import { createWave } from '../ui/wave.js';
-import { createSlider } from '../ui/slider.js';
 import { app, updateMoment } from '../state.js';
 import { mmss } from '../lib/time.js';
 import { enterMoment, stepIndicator } from './_shared.js';
-import { resolveVisual } from '../ui/breath/index.js';
+import { setWaterScreen, enableGrab, ride } from '../ui/tide/water.js';
+
+const RETURN_PAUSE_MS = 700;
 
 /** @param {HTMLElement} view @param {import('../app.js').ScreenCtx} ctx */
 export async function render(view, ctx) {
   const m = await enterMoment(ctx, 'distract');
   if (!m) return;
+  setWaterScreen('doing');
   const optionId = ctx.params.optionId;
   const option = await app.db.get('distractOptions', optionId);
   const useIdx = (() => {
@@ -22,55 +26,49 @@ export async function render(view, ctx) {
   const use = useIdx >= 0 ? m.distractUses[useIdx] : null;
   const since = use ? use.startedAt : Date.now();
 
-  const canvas = /** @type {HTMLCanvasElement} */ (h('canvas', { class: 'wave-canvas wave-ambient', 'aria-hidden': 'true' }));
-  const wave = createWave({ canvas, plot: false, visual: resolveVisual(app.settings.breathVisual, m), getState: () => ({ startedAt: m.startedAt, ratings: [], delayTargetMs: 0 }) });
-  ctx.onCleanup(() => wave.destroy());
-
-  const elapsedEl = h('p', { class: 'muted elapsed' });
-  const tick = () => { elapsedEl.textContent = S.doing.elapsed(mmss(Date.now() - since)); };
+  const elapsedNum = h('span', { class: 'tide-elapsed-num' });
+  const elapsedEl = h('p', { class: 'tide-elapsed' }, elapsedNum, ' ', h('span', null, S.tide.soFar));
+  const tick = () => { elapsedNum.textContent = mmss(Date.now() - since); };
   const iv = setInterval(tick, 1000);
   ctx.onCleanup(() => clearInterval(iv));
   tick();
 
+  let done = false;
   /** @param {number|null} v */
   const finish = async (v) => {
+    if (done) return;
+    done = true;
     await updateMoment(m.id, (x) => {
       const now = Date.now();
       if (v != null) x.ratings.push({ t: now - x.startedAt, v, src: 'return' });
       const u = useIdx >= 0 ? x.distractUses[useIdx] : null;
       if (u) { u.returnedAt = now; u.ratingAfter = v; }
     });
-    ctx.go('#/moment/surf');
+    setTimeout(() => ctx.go('#/moment/surf'), v != null ? RETURN_PAUSE_MS : 0);
   };
 
-  const back = h('div', { class: 'stack' });
-  // DD-054: return rating is saved with an explicit button; skipping still records the return time.
-  const showRate = () => {
-    back.replaceChildren();
-    let val = /** @type {number|null} */ (null);
-    const slider = createSlider({ value: null, label: S.doing.ratePrompt, onCommit: (v) => { val = v; } });
-    ctx.onCleanup(() => slider.destroy());
-    back.append(
-      h('h2', { class: 'section-title', tabindex: '-1' }, S.doing.ratePrompt),
-      slider.el,
-      button(S.doing.saveRating, () => finish(slider.getValue() ?? val)),
-      button(S.doing.skipRating, () => finish(null), 'btn btn-text'));
-    /** @type {HTMLElement} */ (back.querySelector('h2'))?.focus();
-  };
-  back.append(
-    button(S.doing.back, showRate),
-    button(S.doing.other, async () => {
+  const backBtn = button(S.doing.back, () => finish(null), 'btn tide-back');
+  const backRow = h('div', { class: 'tide-back-row' }, backBtn, h('span', { class: 'tide-handle', 'aria-hidden': 'true' }));
+  const pullHint = h('p', { class: 'tide-pull-hint' }, S.tide.pullUp);
+  ctx.onCleanup(ride(backRow, { offset: -52 }));
+  ctx.onCleanup(ride(pullHint, { offset: 40 }));
+  ctx.onCleanup(enableGrab({
+    onInput: (v) => { backBtn.textContent = `${v} · ${S.slider.anchor(v)}`; },
+    onCommit: (v) => finish(v),
+  }));
+
+  view.classList.add('view-tide', 'view-doing');
+  view.append(
+    stepIndicator('distract', ctx),
+    title(option ? option.label : S.steps.distract, 'doing-label tide-doing-title'),
+    h('p', { class: 'lead tide-doing-go' }, S.doing.go),
+    elapsedEl,
+    backRow,
+    pullHint,
+    h('div', { class: 'tide-foot' }, button(S.doing.other, async () => {
       // Leaving for another option ends this use without an after-rating.
       await updateMoment(m.id, (x) => { const u = useIdx >= 0 ? x.distractUses[useIdx] : null; if (u) u.returnedAt = Date.now(); });
       ctx.go('#/moment/distract');
-    }, 'btn btn-text'));
-
-  view.append(
-    stepIndicator('distract', ctx),
-    title(option ? option.label : S.steps.distract, 'doing-label'),
-    h('div', { class: 'wave-wrap wave-wrap-ambient' }, canvas),
-    h('p', { class: 'lead' }, S.doing.go),
-    elapsedEl,
-    back,
+    }, 'btn btn-text')),
   );
 }

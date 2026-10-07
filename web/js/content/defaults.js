@@ -66,6 +66,7 @@ export const SETTINGS_DEFAULTS = {
   ratingPromptSec: 120,
   reducedMotion: 'system', // system | on | off
   shadowPrompt: true,
+  waterStyle: 'cycle', // DD-085: glass | storm | boil | random | cycle (per moment)
   breathVisual: 'wave', // DD-081/082: wave | silk | ink | shallows | pendulum | murmuration | random | cycle (per moment)
 };
 

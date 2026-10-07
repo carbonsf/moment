@@ -145,6 +145,10 @@ test/           node --test suites + D1 shim
 scripts/        make-icons.mjs (regenerates PNG icons, no dependencies)
 ```
 
+## The tide
+
+The moment flow runs on one persistent WebGL water layer (`web/js/ui/tide/`): the waterline is the rating, and you drag it. Water styles and the breathing visual inside the water are chosen per moment in Settings → Motion. `?water=<glass|storm|boil>` and `?breath=<id>` override them for design review. Fonts (PT Sans, Ovo) are self-hosted in `web/fonts/` with their OFL licenses.
+
 ## Overriding the design
 
 Every visual is a token in `web/css/tokens.css`; every string is in `web/js/strings.js`; every choice has a `DD-###` entry. Change the token or string, then update the DD entry's "Override impact" if it matters.

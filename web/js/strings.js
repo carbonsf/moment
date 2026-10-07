@@ -45,6 +45,18 @@ export const S = {
     charsLeft: (n) => `${n} characters left`,
   },
 
+  tide: {
+    dragHint: 'Drag the waterline. Higher is stronger.',
+    letGo: 'Let go to keep it.',
+    rateHint: 'Drag to say where it is',
+    in: 'in',
+    out: 'out',
+    left: 'left',
+    soFar: 'so far',
+    pullUp: 'Pull the water up to say where it is',
+    deeper: 'Deeper · more effort',
+  },
+
   update: {
     ready: 'A new version of Moment is ready.',
     now: 'Update',
@@ -457,6 +469,8 @@ export const S = {
     motionSystem: 'System',
     motionReduce: 'Reduce',
     motionFull: 'Full',
+    waterStyle: 'Water',
+    waterStyles: { glass: 'Glass', storm: 'Storm', boil: 'Boil', random: 'Random', cycle: 'Cycling' },
     breathVisual: 'Breathing visual',
     breathVisuals: {
       wave: 'Wave',

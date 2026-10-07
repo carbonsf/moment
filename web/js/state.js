@@ -7,6 +7,7 @@ import { uuid } from './lib/crypto.js';
 import { computeMomentMetrics } from './lib/metrics.js';
 import { MIN, HOUR } from './lib/time.js';
 import { pickVisualForMoment } from './ui/breath/index.js';
+import { pickStyleForMoment } from './ui/tide/styles.js';
 import {
   DISTRACT_DEFAULTS, TRIGGER_DEFAULTS, THOUGHT_DEFAULTS, SETTINGS_DEFAULTS, PROFILE_DEFAULTS,
 } from './content/defaults.js';
@@ -182,6 +183,9 @@ export async function startMoment(opts = {}) {
   // Random / Cycling breathing visual: chosen once per moment (DD-082).
   const pick = pickVisualForMoment(app.settings.breathVisual, (await app.db.getMeta('breathCycle')) ?? -1);
   if (pick) await app.db.setMeta('breathCycle', pick.index);
+  // Water style: chosen once per moment (DD-085).
+  const wpick = pickStyleForMoment(app.settings.waterStyle, (await app.db.getMeta('waterCycle')) ?? -1);
+  if (wpick) await app.db.setMeta('waterCycle', wpick.index);
   const m = {
     id: uuid(),
     startedAt: now,
@@ -209,6 +213,7 @@ export async function startMoment(opts = {}) {
     longShown: false,
     closeStage: null,
     breathVisual: pick ? pick.id : null,
+    waterStyle: wpick ? wpick.id : null,
   };
   await app.db.put('moments', m);
   bus.emit('moment:start', m);

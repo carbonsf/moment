@@ -3,7 +3,7 @@
 'use strict';
 
 // Bump on every deploy (the changed bytes are how browsers detect an update); must match APP_VERSION in js/config.js.
-const CACHE_VERSION = 'moment-1.0.5';
+const CACHE_VERSION = 'moment-1.0.6';
 
 const PRECACHE = [
   './',
@@ -16,6 +16,12 @@ const PRECACHE = [
   './css/tokens.css',
   './css/base.css',
   './css/components.css',
+  './css/tide.css',
+  './fonts/PTSans-400.woff2',
+  './fonts/PTSans-700.woff2',
+  './fonts/Ovo-400.woff2',
+  './fonts/OFL-PTSans.txt',
+  './fonts/OFL-Ovo.txt',
   './js/app.js',
   './js/config.js',
   './js/strings.js',
@@ -34,6 +40,11 @@ const PRECACHE = [
   './js/ui/chips.js',
   './js/ui/sheet.js',
   './js/ui/chart.js',
+  './js/ui/tide/water.js',
+  './js/ui/tide/gl.js',
+  './js/ui/tide/shaders.js',
+  './js/ui/tide/styles.js',
+  './js/ui/tide/inwater.js',
   './js/ui/breath/index.js',
   './js/ui/breath/common.js',
   './js/ui/breath/silk.js',

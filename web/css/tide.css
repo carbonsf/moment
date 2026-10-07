@@ -1,0 +1,142 @@
+/* Tide (DD-083): water layer, surface riders, tide pills, depth list. Tokens from tokens.css where they exist. */
+
+/* DD-084 self-hosted fonts (no third-party requests; precached for offline). */
+@font-face { font-family: 'PT Sans'; src: url('../fonts/PTSans-400.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'PT Sans'; src: url('../fonts/PTSans-700.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Ovo'; src: url('../fonts/Ovo-400.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+
+/* ---------- Layer */
+.tide-layer {
+  position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100lvh;
+  z-index: 0; pointer-events: none;
+  opacity: 0; transition: opacity var(--dur-slow) var(--ease-out);
+}
+.tide-layer.is-shown { opacity: 1; }
+.tide-fallback { background: linear-gradient(to bottom, #2b5a5f 0, #10292e 30%, #061015 100%); will-change: transform; }
+#app { position: relative; z-index: 1; }
+html.tide-grab, html.tide-grab body { touch-action: none; overscroll-behavior: none; }
+.view-tide { min-height: calc(100dvh - 140px); }
+
+/* Elements carried by the surface (water.js ride()). */
+.tide-rider {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 2;
+  max-width: var(--content-max); margin: 0 auto;
+  padding-inline: calc(var(--gutter) + 10px);
+  pointer-events: none; will-change: transform;
+}
+.tide-rider button { pointer-events: auto; }
+
+/* ---------- Type */
+.tide-title { font-family: var(--font-display); font-weight: var(--fw-regular); font-size: var(--fs-tide-title); line-height: 1.2; }
+.tide-title-sm { font-size: 1.4375rem; line-height: 1.25; }
+.tide-lead { color: var(--c-text-2); }
+
+/* ---------- Reading on the surface */
+.tide-reading { display: flex; align-items: baseline; gap: var(--sp-3); transition: opacity var(--dur-base) var(--ease-out); }
+.tide-reading.is-empty { opacity: 0; }
+.tide-num { font-size: var(--fs-tide-num); line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.tide-num-sm { font-size: 2.5rem; letter-spacing: -.02em; }
+.tide-anchor { font-size: var(--fs-lg); color: var(--c-sand); }
+.tide-reading-sm .tide-anchor { font-size: var(--fs-sm); }
+.tide-reading.is-prompting .tide-num { color: var(--c-focus); }
+.tide-handle-row { display: flex; justify-content: flex-end; padding-right: 28px; }
+.tide-handle { width: 56px; height: 22px; border-radius: 11px; background: rgba(233,230,223,.12); border: 1px solid rgba(233,230,223,.4); }
+
+/* ---------- Surf */
+.tide-guidance { text-align: center; }
+.tide-line { font-family: var(--font-display); font-size: 1.5rem; line-height: 1.3; transition: opacity 300ms var(--ease-out); }
+.tide-line.is-changing { opacity: 0; }
+.tide-guidance .guidance-controls { justify-content: center; margin-left: 0; }
+.tide-cue-row { display: flex; justify-content: flex-end; padding-right: 20px; }
+.tide-cue { font-family: var(--font-display); font-size: 1.375rem; color: var(--c-tide-ink); letter-spacing: .04em; }
+.tide-timer { display: flex; justify-content: center; align-items: baseline; gap: var(--sp-2); color: var(--c-tide-ink-2); }
+.tide-timer-num { font-size: 2.625rem; line-height: 1; color: var(--c-text); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.tide-marks { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; }
+.tide-mark-line { fill: none; stroke: var(--c-sand); stroke-width: 1.5; stroke-opacity: .6; stroke-dasharray: 2 5; stroke-linecap: round; }
+.tide-mark-dot { fill: var(--c-sand); }
+
+/* ---------- Pills (frosted, resting underwater) */
+.tide-pills { display: grid; gap: var(--sp-2); }
+.tide-pills-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.tide-pills-2 {
+  grid-template-columns: 1fr 1fr;
+  position: fixed; left: 0; right: 0; z-index: 2;
+  bottom: calc(env(safe-area-inset-bottom) + 40px);
+  max-width: var(--content-max); margin: 0 auto; padding-inline: var(--gutter);
+}
+.tide-pill {
+  min-height: 52px; padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-pill);
+  background: rgba(233,230,223,.07); border: 1px solid rgba(140,195,204,.3);
+  color: var(--c-text); font-weight: var(--fw-regular); font-size: var(--fs-sm);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  transition: transform var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), border-color var(--dur-slow) var(--ease-out);
+}
+.tide-pill:active { transform: scale(.96); background: rgba(233,230,223,.14); }
+.tide-pill-strong { font-weight: var(--fw-bold); font-size: var(--fs-md); background: rgba(233,230,223,.1); border-color: rgba(140,195,204,.55); }
+.tide-dock {
+  position: fixed; left: 0; right: 0; z-index: 2;
+  bottom: calc(env(safe-area-inset-bottom) + 40px);
+  max-width: var(--content-max); margin: 0 auto; padding-inline: var(--gutter);
+  display: flex; flex-direction: column; gap: var(--sp-2);
+  transition: transform 900ms var(--ease-out);
+}
+.tide-dock.is-raised { transform: translateY(-46px); }
+.tide-dock.is-raised .tide-pill { border-color: rgba(140,195,204,.7); }
+.tide-card { background: rgba(18,20,24,.55); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid rgba(140,195,204,.2); }
+
+/* ---------- Foot (hint + secondary action) */
+.tide-foot {
+  position: fixed; left: 0; right: 0; z-index: 2;
+  bottom: calc(env(safe-area-inset-bottom) + 20px);
+  display: flex; flex-direction: column; align-items: center; gap: var(--sp-1);
+  max-width: var(--content-max); margin: 0 auto; padding-inline: var(--gutter);
+}
+.tide-foot-row { flex-direction: row; justify-content: space-between; }
+.tide-hint { color: var(--c-tide-ink); }
+.tide-foot .btn-text { color: var(--c-tide-ink-2); }
+
+/* ---------- Distract: depth = effort */
+.tide-options { display: flex; flex-direction: column; padding-bottom: 120px; }
+.tide-option {
+  --depth: 0;
+  width: 100%; min-height: var(--tap-min); padding: 6px 0;
+  background: none; border: 0; text-align: left; cursor: pointer; color: var(--c-text);
+  font-size: calc(1.5625rem - var(--depth) * .5rem);
+  opacity: calc(1 - var(--depth) * .72);
+  filter: blur(calc(max(0, var(--depth) - .35) * 3.5px));
+  transform-origin: left center;
+  transition: transform 900ms cubic-bezier(.3,.6,.2,1), opacity 700ms, filter 700ms, color 300ms;
+  touch-action: manipulation;
+}
+.tide-options.is-picking .tide-option { opacity: 0; filter: blur(4px); transform: translateY(30px); }
+.tide-options.is-picking .tide-option.is-rising { opacity: 1; filter: none; color: var(--c-sand); transform: translateY(-120px) scale(1.25); }
+.tide-depth-label { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--c-accent); opacity: .6; margin-top: var(--sp-4); }
+.tide-else { color: var(--c-tide-ink); }
+
+/* ---------- Doing */
+.tide-doing-title { font-family: var(--font-display); font-weight: var(--fw-regular); font-size: clamp(3.2rem, 16vw, 4.9rem); line-height: 1.05; text-align: center; margin-top: 10vh; }
+.tide-doing-go { text-align: center; color: var(--c-text-2); }
+.tide-elapsed { text-align: center; color: var(--c-text-3); }
+.tide-elapsed-num { font-size: 1.625rem; font-variant-numeric: tabular-nums; }
+.tide-back-row { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.tide-back { background: none; border: 0; color: var(--c-text); font-weight: var(--fw-bold); font-size: 1.0625rem; min-height: var(--tap-min); padding: 0 var(--sp-4); }
+.tide-pull-hint { text-align: center; font-size: var(--fs-xs); color: var(--c-tide-ink-2); }
+
+/* Reduced motion: no lift, instant states (water.js also stops the simulation and breath). */
+:root[data-motion="reduce"] .tide-option, :root[data-motion="reduce"] .tide-dock, :root[data-motion="reduce"] .tide-line { transition: none; }
+
+/* DD-088 breathing visual inside the water: above the tide, below the app; clipped to the waterline in inwater.js */
+.tide-visual {
+  position: fixed; top: 0; left: 0; z-index: 0; pointer-events: none;
+  transform-origin: 0 0; mix-blend-mode: screen;
+  opacity: 0; transition: opacity var(--dur-slow) var(--ease-out);
+  will-change: transform, clip-path;
+  /* Soft round edge so no square canvas boundary shows in the water. */
+  -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 62%, transparent 100%);
+}
+
+/* Scroll hint (DD-079) over the water: no page-coloured fade, chevron above the fixed tide foot. */
+html.tide-on .scroll-hint { background: none; height: auto; bottom: calc(env(safe-area-inset-bottom) + 64px); }
+html.tide-on .scroll-hint-btn { color: var(--c-tide-ink); }

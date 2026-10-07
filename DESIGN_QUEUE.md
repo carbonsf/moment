@@ -2,9 +2,20 @@
 
 Open design questions to revisit in the design pass. Each item links to where it can be seen live.
 
-## 1. Breathing visual (DD-081)
+## 1. The tide (DD-083 – DD-088), shipped in 1.0.6
 
-Which visual carries the breath on Surf and Doing? All six share one curve (4 s in, 6 s out), sit under the ratings plot on Surf, and draw a still frame under Reduce Motion. The default stays **Wave** until one is chosen.
+The slider and wave on Start, Distance, Surf, Distract and Doing are replaced by one persistent WebGL water layer: drag the waterline to rate. Water style Glass / Storm / Boil per moment (Settings → Motion → Water, default Cycling). The six breathing visuals now live inside the water (Settings → Motion → Breathing visual; Wave = the water alone).
+
+**Open from the handoff**
+- VoiceOver: no `aria-valuetext` on the tide screens yet. Add an `sr-only` range input bound to `setWaterValue` if needed.
+- Decide, Close and After keep their old layouts over low, dim water. They're the next screens to redesign.
+- Battery: test a 30-minute moment on an older iPhone. Two WebGL layers run when Ink or Shallows is in the water. If it runs hot, lower the DPR cap in `ui/tide/gl.js` (and `inwater.js`) from 1.5 to 1.
+- Legibility: in-water visual strength per screen is in `STRENGTH` in `ui/tide/inwater.js`.
+- Fonts: PT Sans and Ovo ship with their OFL licenses in `web/fonts/`. The handoff's files are latin subsets; confirm the subsetting is fine under PT Sans's Reserved Font Name clause, or rename the family.
+
+## 2. Breathing visual (DD-081)
+
+Which visual lives in the water? All six share one curve (4 s in, 6 s out) and draw a still frame under Reduce Motion. Since 1.0.6 they render inside the tide, clipped to the waterline (DD-088). The default stays **Wave** (the water alone).
 
 **Where to look**
 - Side by side, live: [`/lab/`](https://carbonsf.github.io/moment/lab/) (all six, with the breath phase readout)
@@ -30,10 +41,10 @@ Which visual carries the breath on Surf and Doing? All six share one curve (4 s 
 - Colors come from `tokens.css` (`--c-bg`, `--c-accent`, `--c-sand`, `--c-text`), so a palette change carries through.
 - To drop one: remove it from `VISUALS` in `index.js` and its label in `strings.js`.
 
-## 2. Scroll affordance (DD-079)
+## 3. Scroll affordance (DD-079)
 
 Placeholder bottom fade + chevron. Restyle via `.scroll-hint` / `--scroll-hint-h`, or replace (e.g. a sticky action bar on long screens).
 
-## 3. Update prompt (DD-080)
+## 4. Update prompt (DD-080)
 
 Placeholder banner at the top. Restyle via `.banner-update`; consider moving to a toast or into Settings → About.
