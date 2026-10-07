@@ -66,6 +66,7 @@ export const SETTINGS_DEFAULTS = {
   ratingPromptSec: 120,
   reducedMotion: 'system', // system | on | off
   shadowPrompt: true,
+  breathVisual: 'wave', // DD-081: wave | silk | ink | shallows | pendulum | murmuration
 };
 
 /** Default profile (§5.2). thoughtsReviewed is an addition for Setup completeness. DD-039 */

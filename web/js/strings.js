@@ -457,6 +457,15 @@ export const S = {
     motionSystem: 'System',
     motionReduce: 'Reduce',
     motionFull: 'Full',
+    breathVisual: 'Breathing visual',
+    breathVisuals: {
+      wave: 'Wave',
+      silk: 'Silk',
+      ink: 'Ink',
+      shallows: 'Shallows',
+      pendulum: 'Pendulum',
+      murmuration: 'Murmuration',
+    },
     setup: 'Setup',
     data: 'Your data',
     /** @param {string} ago */

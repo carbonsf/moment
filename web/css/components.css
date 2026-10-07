@@ -177,6 +177,9 @@ select.input { appearance: none; -webkit-appearance: none; background-image: non
 
 /* ---------- Surf */
 .wave-wrap { position: relative; }
+/* DD-081 alternate breath visuals render on a backdrop canvas beneath the ratings plot */
+.breath-backdrop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: var(--r-md); }
+.wave-over-backdrop { position: relative; z-index: 1; }
 .wave-canvas { width: 100%; height: var(--wave-h); min-height: var(--wave-min-h); max-height: 420px; }
 .wave-wrap-ambient .wave-canvas { height: 22vh; min-height: 120px; }
 .guidance { display: flex; flex-direction: column; gap: var(--sp-1); min-height: 4.5em; }

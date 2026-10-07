@@ -6,6 +6,8 @@
  */
 import { cssVar, cssMs, reducedMotion } from './dom.js';
 import { MIN } from '../lib/time.js';
+import { VISUALS } from './breath/index.js';
+import { readPalette } from './breath/common.js';
 
 /**
  * @typedef {{t:number, v:number}} Pt
@@ -39,7 +41,8 @@ function monotoneTangents(p) {
 }
 
 /**
- * @param {{canvas:HTMLCanvasElement, plot:boolean, getState:()=>WaveState}} opts
+ * @param {{canvas:HTMLCanvasElement, plot:boolean, getState:()=>WaveState, visual?:string}} opts
+ *   visual: breath visual id (DD-081); anything but 'wave' renders on a backdrop canvas beneath this one.
  */
 export function createWave(opts) {
   const { canvas } = opts;
@@ -55,6 +58,26 @@ export function createWave(opts) {
   let fallMs = cssMs('--wave-fall') || 6000;
   let durBase = cssMs('--dur-base') || 320;
   let destroyed = false;
+
+  // Alternate breath visual on a backdrop canvas (falls back to the band if unsupported, e.g. no WebGL).
+  /** @type {import('./breath/common.js').BreathRenderer|null} */
+  let backdrop = null;
+  /** @type {HTMLCanvasElement|null} */
+  let backdropEl = null;
+  const make = opts.visual && opts.visual !== 'wave' ? VISUALS[opts.visual] : null;
+  let backdropTried = false;
+  // Attach once the canvas is in the document (screens build the canvas before inserting it).
+  const ensureBackdrop = () => {
+    if (!make || backdropTried || !canvas.parentElement) return;
+    backdropTried = true;
+    backdropEl = document.createElement('canvas');
+    backdropEl.className = 'breath-backdrop';
+    backdropEl.setAttribute('aria-hidden', 'true');
+    canvas.parentElement.insertBefore(backdropEl, canvas);
+    canvas.classList.add('wave-over-backdrop');
+    backdrop = make(backdropEl, readPalette());
+    if (!backdrop) { backdropEl.remove(); backdropEl = null; canvas.classList.remove('wave-over-backdrop'); }
+  };
 
   function readColors() {
     return {
@@ -79,6 +102,8 @@ export function createWave(opts) {
     riseMs = cssMs('--wave-rise') || riseMs;
     fallMs = cssMs('--wave-fall') || fallMs;
     durBase = cssMs('--dur-base') || durBase;
+    ensureBackdrop();
+    backdrop?.resize(w, hgt, dpr);
     draw(performance.now());
   };
 
@@ -183,7 +208,8 @@ export function createWave(opts) {
     const t = Date.now();
     const level = reduce ? 0.5 : breathLevel(t, riseMs, fallMs);
     const phase = reduce ? 0 : (t / (riseMs + fallMs)) * Math.PI * 0.5;
-    drawAmbient(level, phase);
+    if (backdrop) backdrop.draw(nowPerf / 1000, level, reduce); // small, page-relative seconds keep shader floats precise
+    else drawAmbient(level, phase);
     if (opts.plot) drawPlot(nowPerf);
   }
 
@@ -227,6 +253,8 @@ export function createWave(opts) {
       stop();
       ro.disconnect();
       document.removeEventListener('visibilitychange', onVis);
+      backdrop?.destroy();
+      backdropEl?.remove();
     },
   };
 }

@@ -19,6 +19,7 @@ import { evidence } from '../lib/metrics.js';
 import { mmss } from '../lib/time.js';
 import { BODY_LOCATIONS, SENSATIONS } from '../content/defaults.js';
 import { enterMoment, stepIndicator, validPlans, planThen } from './_shared.js';
+import { resolveVisual } from '../ui/breath/index.js';
 
 /** Guidance position per moment, so returning from Doing doesn't restart the lines. */
 const guidanceMemo = new Map();
@@ -37,7 +38,7 @@ export async function render(view, ctx) {
   const canvas = /** @type {HTMLCanvasElement} */ (h('canvas', { class: 'wave-canvas', role: 'img', 'aria-label': S.surf.waveLabel }));
   const waveSummary = h('p', { class: 'sr-only', 'aria-live': 'polite' });
   const wave = createWave({
-    canvas, plot: true,
+    canvas, plot: true, visual: resolveVisual(app.settings.breathVisual),
     getState: () => ({ startedAt: m.startedAt, ratings: m.ratings, delayTargetMs: delayTargetMs(m) }),
   });
   ctx.onCleanup(() => wave.destroy());

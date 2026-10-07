@@ -1,0 +1,12 @@
+/* Design lab: all breath visuals side by side (DD-081). Not part of the app flow. */
+.lab { max-width: 1200px; margin: 0 auto; padding: calc(env(safe-area-inset-top) + var(--sp-5)) var(--gutter) var(--sp-8); display: flex; flex-direction: column; gap: var(--sp-5); }
+.lab-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--sp-3); }
+.lab-breath { color: var(--c-text-2); font-variant-numeric: tabular-nums; min-width: 8ch; }
+.lab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: var(--sp-4); }
+.lab-card { margin: 0; background: var(--c-surface); border-radius: var(--r-md); overflow: hidden; display: flex; flex-direction: column; }
+.lab-card .wave-wrap { background: var(--c-bg); }
+.lab-card .wave-canvas { height: 340px; min-height: 0; max-height: none; }
+.lab-card figcaption { padding: var(--sp-3) var(--sp-4) var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-1); }
+.lab-name { font-weight: var(--fw-bold); font-size: var(--fs-lg); }
+.lab-how { color: var(--c-text-2); font-size: var(--fs-sm); }
+.lab-try { font-size: var(--fs-sm); }

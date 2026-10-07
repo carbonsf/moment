@@ -3,7 +3,7 @@
 'use strict';
 
 // Bump on every deploy (the changed bytes are how browsers detect an update); must match APP_VERSION in js/config.js.
-const CACHE_VERSION = 'moment-1.0.3';
+const CACHE_VERSION = 'moment-1.0.4';
 
 const PRECACHE = [
   './',
@@ -34,6 +34,13 @@ const PRECACHE = [
   './js/ui/chips.js',
   './js/ui/sheet.js',
   './js/ui/chart.js',
+  './js/ui/breath/index.js',
+  './js/ui/breath/common.js',
+  './js/ui/breath/silk.js',
+  './js/ui/breath/ink.js',
+  './js/ui/breath/shallows.js',
+  './js/ui/breath/pendulum.js',
+  './js/ui/breath/murmuration.js',
   './js/ui/scrollhint.js',
   './js/services/api.js',
   './js/services/checkins.js',
@@ -70,6 +77,9 @@ const PRECACHE = [
   './js/screens/tape.js',
   './js/screens/thought.js',
   './js/screens/words.js',
+  './lab/index.html',
+  './lab/lab.css',
+  './lab/lab.js',
 ];
 
 // DD-019: neutral bodies, never user content.
@@ -102,7 +112,11 @@ self.addEventListener('fetch', (event) => {
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_VERSION);
     if (req.mode === 'navigate') {
-      return (await cache.match('./index.html')) || fetch(req);
+      // Serve the page that was asked for (app shell or /lab/), not always the app shell.
+      const path = url.pathname.endsWith('/') ? `${url.pathname}index.html` : url.pathname;
+      const page = await cache.match(path);
+      if (page) return page;
+      try { return await fetch(req); } catch { return (await cache.match('./index.html')) || Response.error(); }
     }
     const hit = await cache.match(req, { ignoreSearch: true });
     if (hit) return hit;

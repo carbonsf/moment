@@ -12,6 +12,7 @@ import { syncStatus, syncNow } from '../services/syncer.js';
 import { supportEnabled, getSupportPerson, saveSupportPerson } from '../services/support.js';
 import { ago } from './_shared.js';
 import { ITEMS } from './setup.js';
+import { VISUAL_IDS } from '../ui/breath/index.js';
 
 /** @param {string} label @param {boolean} on @param {(v:boolean)=>void} onChange @param {string} id */
 function toggle(label, on, onChange, id) {
@@ -42,6 +43,15 @@ function timeField(label, value, onChange, id) {
   const inp = /** @type {HTMLInputElement} */ (h('input', { type: 'time', class: 'input input-time', id, value, step: 300 }));
   inp.addEventListener('change', () => { if (/^\d\d:\d\d$/.test(inp.value)) onChange(inp.value); });
   return h('div', { class: 'field field-inline' }, h('label', { for: id, class: 'field-label' }, label), inp);
+}
+
+/** Breath visual choice (DD-081). @param {string} value @param {(v:string)=>void} onChange */
+function breathPicker(value, onChange) {
+  const sel = /** @type {HTMLSelectElement} */ (h('select', { class: 'input', id: 'set-breath' },
+    VISUAL_IDS.map((id) => h('option', { value: id }, S.settings.breathVisuals[/** @type {'wave'} */ (id)] || id))));
+  sel.value = value;
+  sel.addEventListener('change', () => onChange(sel.value));
+  return h('div', { class: 'field' }, h('label', { for: 'set-breath', class: 'field-label' }, S.settings.breathVisual), sel);
 }
 
 /** Everything except meta.secret (§6.11). The sync queue is internal and left out. DD-074 */
@@ -129,7 +139,8 @@ export async function render(view, ctx) {
 
   const motion = h('section', { class: 'card settings-section', 'aria-labelledby': 'set-motion' },
     h('h2', { class: 'section-title', id: 'set-motion' }, S.settings.motion),
-    segmented(S.settings.motion, [['system', S.settings.motionSystem], ['on', S.settings.motionReduce], ['off', S.settings.motionFull]], st.reducedMotion, (v) => set({ reducedMotion: v })));
+    segmented(S.settings.motion, [['system', S.settings.motionSystem], ['on', S.settings.motionReduce], ['off', S.settings.motionFull]], st.reducedMotion, (v) => set({ reducedMotion: v })),
+    breathPicker(st.breathVisual || 'wave', (v) => set({ breathVisual: v })));
 
   const setup = h('section', { class: 'card settings-section', 'aria-labelledby': 'set-setup' },
     h('h2', { class: 'section-title', id: 'set-setup' }, S.settings.setup),
