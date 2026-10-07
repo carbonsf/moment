@@ -1,0 +1,12 @@
+{
+  "name": "moment",
+  "private": true,
+  "type": "module",
+  "description": "Moment — a PWA for getting through a hard moment. See README.md.",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "serve": "python3 -m http.server 8080 --directory web",
+    "icons": "node scripts/make-icons.mjs"
+  }
+}

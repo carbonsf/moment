@@ -1,0 +1,82 @@
+/* Moment design tokens (§13). All visuals derive from these. Override here (P10). */
+
+:root,
+:root[data-theme="dark"] {
+  /* Color — DD-020: dark, desaturated, no pure black/white. */
+  --c-bg:            #121418;  /* DD-020 near-black, not pure black: less halation on OLED at night */
+  --c-surface:       #1a1e24;  /* DD-026 elevation step 1 */
+  --c-surface-2:     #222831;  /* DD-026 elevation step 2 */
+  --c-border:        #2e3540;
+  --c-text:          #e9e6df;  /* DD-020 warm off-white, not pure white: less glare */
+  --c-text-2:        #b3b8bf;
+  --c-text-3:        #8a9099;  /* ≥4.5:1 on --c-bg */
+  --c-accent:        #8cc3cc;  /* calm desaturated teal; primary actions, wave */
+  --c-accent-ink:    #0f2a2e;  /* text on accent */
+  --c-sand:          #d2b98f;  /* DD-030 user's own words: reasons, message, counters */
+  --c-focus:         #f0e2b6;  /* §15 focus ring */
+  --c-wave-ambient:  rgba(140,195,204,0.14);
+  --c-wave-line:     #8cc3cc;
+  --c-wave-point:    #e9e6df;
+  --c-notice:        #d2b98f;  /* DD-021 errors/notices use sand + icon + text; no red anywhere */
+  --c-scrim:         rgba(8,9,11,0.66); /* DD-045 sheet scrim, derived from --c-bg */
+  --c-heat-1:        rgba(140,195,204,0.12); /* DD-022 count shading uses opacity of one hue, numbers always shown */
+  --c-heat-2:        rgba(140,195,204,0.24);
+  --c-heat-3:        rgba(140,195,204,0.38);
+  --c-heat-4:        rgba(140,195,204,0.55);
+
+  /* Type — DD-023: system font + Dynamic Type. */
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --fs-xs:  .8125rem;
+  --fs-sm:  .9375rem;
+  --fs-md:  1rem;
+  --fs-lg:  1.25rem;
+  --fs-xl:  1.625rem;
+  --fs-2xl: 2.25rem;
+  --fs-num: 3.5rem;   /* slider value */
+  --lh-body: 1.45;
+  --lh-head: 1.2;
+  --fw-regular: 400;  /* weights 400 and 600 only */
+  --fw-bold:    600;
+
+  /* Space — 4px base. */
+  --sp-1: .25rem;
+  --sp-2: .5rem;
+  --sp-3: .75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 2.5rem;
+  --sp-8: 3rem;
+
+  /* Shape — DD-024 soft radii. */
+  --r-sm:   10px;
+  --r-md:   16px;
+  --r-lg:   24px;
+  --r-pill: 999px;
+
+  /* Layout */
+  --tap-min: 48px;          /* DD-025 exceeds the 44pt minimum */
+  --thumb: 44px;            /* DD-029 slider thumb ≥44px */
+  --content-max: 560px;
+  --gutter: 16px;
+  --wave-h: 40vh;           /* §6.3.3 ~40vh */
+  --wave-min-h: 180px;      /* E29 */
+
+  /* Motion — DD-027 */
+  --dur-fast: 180ms;
+  --dur-base: 320ms;
+  --dur-slow: 600ms;
+  --ease-out: cubic-bezier(.2,.7,.2,1);
+  --wave-period: 10s;
+  --wave-rise: 4s;
+  --wave-fall: 6s;
+
+  color-scheme: dark;
+}
+
+/* Reduced motion (system or setting): crossfades become instant (§13.4). */
+:root[data-motion="reduce"] {
+  --dur-fast: 0ms;
+  --dur-base: 0ms;
+  --dur-slow: 0ms;
+}

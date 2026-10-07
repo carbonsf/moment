@@ -1,0 +1,102 @@
+/* Reset, typography, layout primitives. Tokens only (P10). */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-family: var(--font-body);
+  font-size: 100%;
+  line-height: var(--lh-body);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--c-bg);
+  color: var(--c-text);
+  overscroll-behavior: none; /* §13.5 no pull-to-refresh */
+}
+
+/* DD-023 iOS Dynamic Type. */
+@supports (font: -apple-system-body) {
+  html { font: -apple-system-body; font-family: var(--font-body); line-height: var(--lh-body); }
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--c-bg);
+  color: var(--c-text);
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  overflow-wrap: break-word; /* E29: reflow, no mid-word truncation */
+  hyphens: manual;
+}
+
+h1, h2, h3 { line-height: var(--lh-head); font-weight: var(--fw-bold); margin: 0; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+img, svg, canvas { display: block; max-width: 100%; }
+a { color: var(--c-accent); }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+details > summary { cursor: pointer; }
+[hidden] { display: none !important; }
+
+/* §15 visible focus ring: 2px --c-focus, offset 2px. */
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 2px; border-radius: var(--r-sm); }
+h1:focus-visible, h2:focus-visible, blockquote:focus-visible { outline: none; }
+
+.sr-only {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* App shell: single column, centered, safe areas (§6.0, §13.3). */
+#app {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding:
+    calc(env(safe-area-inset-top) + var(--sp-2))
+    calc(env(safe-area-inset-right) + var(--gutter))
+    calc(env(safe-area-inset-bottom) + var(--sp-6))
+    calc(env(safe-area-inset-left) + var(--gutter));
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--tap-min);
+  gap: var(--sp-2);
+}
+.topbar-left { min-width: var(--tap-min); }
+.topbar-help { margin-left: auto; }
+
+.main { position: relative; flex: 1; display: grid; }
+.view {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding-top: var(--sp-3);
+  transition: opacity var(--dur-base) var(--ease-out);
+  opacity: 1;
+}
+.view-entering { opacity: 0; }
+.view-leaving { opacity: 0; pointer-events: none; }
+
+.screen-title { font-size: var(--fs-xl); }
+.section-title { font-size: var(--fs-md); color: var(--c-text-2); font-weight: var(--fw-bold); }
+.card-title { font-size: var(--fs-lg); font-weight: var(--fw-bold); }
+.lead { font-size: var(--fs-lg); color: var(--c-text); }
+.muted { color: var(--c-text-2); }
+.small { font-size: var(--fs-sm); }
+.notice { color: var(--c-notice); }
+
+.stack { display: flex; flex-direction: column; gap: var(--sp-3); }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2) var(--sp-3); }
+.actions { display: flex; flex-direction: column; gap: var(--sp-3); }
+.status-slot:empty { display: none; }

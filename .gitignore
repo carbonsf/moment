@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+.wrangler/
+worker/.dev.vars
+worker/.vapid-private.jwk.json
+.claude/

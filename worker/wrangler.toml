@@ -1,0 +1,20 @@
+# Moment API — Cloudflare Worker (free plan). DD-002
+name = "moment-api"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+# Secrets (NOT in this file) — set once with:
+#   npx wrangler secret put VAPID_PRIVATE_JWK   # JSON of the P-256 private JWK from `npm run vapid`
+#   npx wrangler secret put VAPID_SUBJECT       # e.g. mailto:you@example.com
+
+[vars]
+ALLOWED_ORIGIN = "https://carbonsf.github.io"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "moment"
+database_id = "399ceea2-893f-4739-b5db-3d059606e190"
+
+# Check-in sender (§7.3): every minute.
+[triggers]
+crons = ["* * * * *"]

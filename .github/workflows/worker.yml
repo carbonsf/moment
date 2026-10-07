@@ -1,0 +1,31 @@
+name: Deploy Worker (optional)
+
+# Requires repository secret CLOUDFLARE_API_TOKEN (Workers Scripts:Edit, D1:Edit).
+# Worker secrets (VAPID_PRIVATE_JWK, VAPID_SUBJECT) are set once with `wrangler secret put`, not here.
+
+on:
+  push:
+    branches: [main]
+    paths: ['worker/**', '.github/workflows/worker.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test "test/worker.test.js"
+      - if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: worker
+        run: npm install --no-audit --no-fund
+      - if: env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: worker
+        run: npx wrangler deploy
