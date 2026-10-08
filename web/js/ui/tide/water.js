@@ -21,7 +21,7 @@ export const valueAt = (L) => Math.max(0, Math.min(10, Math.round((L - 0.1) / 0.
 /**
  * Per-screen behavior. amp: ambient ripple; breath: rise as a fraction of screen height; dim: underwater darkening;
  * speed: time scale; fixed: level regardless of rating; rest: level before the first rating.
- * @type {Record<string, {amp:number, breath:number, dim:number, speed:number, fixed?:number, rest?:number}>}
+ * @type {Record<string, {amp:number, breath:number, dim:number, speed:number, fixed?:number, rest?:number, style?:string}>}
  */
 const SCREENS = {
   start: { amp: 1, breath: 0.012, dim: 0, speed: 1, rest: 0.3 },
@@ -29,6 +29,12 @@ const SCREENS = {
   surf: { amp: 1.3, breath: 0.05, dim: 0, speed: 1, rest: 0.4 },
   distract: { amp: 0.6, breath: 0.012, dim: 0, speed: 1, fixed: 0.78 },
   doing: { amp: 0.25, breath: 0.03, dim: 0.2, speed: 0.4, fixed: 0.24 },
+  decide: { amp: 0.35, breath: 0.02, dim: 0.1, speed: 0.5, rest: 0.4 },   // still, glassy, at the current rating
+  tape: { amp: 0.4, breath: 0.015, dim: 0, speed: 0.6, fixed: 0.8 },       // prompts step down the glass (setWaterDim / setWaterLevel)
+  thought: { amp: 0.5, breath: 0.015, dim: 0, speed: 0.8, fixed: 0.78 },   // drops to 0.4 when a counter surfaces
+  words: { amp: 0.4, breath: 0.02, dim: 0, speed: 0.7, fixed: 0.3 },       // own words sit in clear air
+  close: { amp: 0.6, breath: 0.02, dim: 0, speed: 1, rest: 0.4 },
+  after: { amp: 0, breath: 0, dim: 0.3, speed: 0.25, fixed: 0.06, style: 'glass' }, // drained, no effects
   moment: { amp: 0.6, breath: 0.03, dim: 0.15, speed: 0.6, fixed: 0.2 },
 };
 
@@ -38,6 +44,8 @@ const H = new Float32Array(NH), V = new Float32Array(NH), HB = new Uint8Array(NH
 /** @type {ReturnType<typeof createTideRenderer>} */ let renderer = null;
 let L = 0.2, vel = 0, target = 0.2, grabbing = false, fx = 0.5, fL = 0.2, bm = 0, pb = 0, kick = 0, t = 0, last = 0, raf = 0, shown = false;
 let cfg = SCREENS.moment;
+let dimOverride = /** @type {number|null} */ (null);
+let styleId = 'glass';
 let screenName = 'moment';
 /** Per-frame listeners (e.g. the breathing visual inside the water, DD-088). @type {Set<(f:{t:number, b:number, level:number, shown:boolean, screen:string, reduce:boolean}) => void>} */
 const hooks = new Set();
@@ -119,7 +127,7 @@ function frame(ts) {
   lastDisplay = L + (br.b - 0.5) * bm;
   t += dt * (reduce ? 0 : cfg.speed);
 
-  if (renderer && shown) renderer.draw({ t, b: br.b, level: lastDisplay, amp: cfg.amp, dim: cfg.dim, heights: HB });
+  if (renderer && shown) renderer.draw({ t, b: br.b, level: lastDisplay, amp: cfg.amp, dim: dimOverride ?? cfg.dim, heights: HB });
   for (const fn of hooks) fn({ t, b: br.b, level: lastDisplay, shown, screen: screenName, reduce });
   if (fallback) fallback.style.transform = `translateY(${((1 - lastDisplay) * 100).toFixed(2)}%)`;
   const ih = window.innerHeight;
@@ -167,6 +175,8 @@ function show(on) {
  */
 export function setWaterScreen(name, opts = {}) {
   cfg = SCREENS[name] || SCREENS.moment;
+  dimOverride = null;
+  renderer?.setStyle(cfg.style || styleId);
   screenName = SCREENS[name] ? name : 'moment';
   const next = cfg.fixed ?? (opts.value != null ? levelFor(opts.value) : (cfg.rest ?? 0.4));
   const dir = Math.sign(next - L);
@@ -192,7 +202,17 @@ export function hideWater() { show(false); }
 export function setWaterValue(v) { target = levelFor(v); }
 
 /** @param {string} id glass | storm | boil */
-export function setWaterStyle(id) { renderer?.setStyle(id); }
+export function setWaterStyle(id) { styleId = id; if (!cfg.style) renderer?.setStyle(id); }
+
+/** Set a raw level (0..1 from the bottom) with a slosh, for screens whose level isn't a rating. @param {number} lv */
+export function setWaterLevel(lv) {
+  const dir = Math.sign(lv - L);
+  for (let i = 0; i < NH; i++) V[i] += dir * Math.cos((Math.PI * i) / (NH - 1)) * 0.3 * Math.min(1, Math.abs(lv - L) * 3);
+  target = lv;
+}
+
+/** Darken the water (0..1) until the next setWaterScreen. @param {number|null} d */
+export function setWaterDim(d) { dimOverride = d; }
 
 /**
  * Keep an element on the surface. It gets class .tide-rider (fixed, top 0) and a per-frame translateY.

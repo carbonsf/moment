@@ -21,11 +21,11 @@
     <div style="position:absolute;top:11px;left:50%;transform:translateX(-50%);width:122px;height:35px;border-radius:20px;background:#000;z-index:5"></div>
 
     <div style="position:absolute;top:58px;left:24px;right:24px;display:flex;justify-content:space-between;align-items:center;font-size:15px;color:#b3b8bf;z-index:4">
-      <span onClick="{{ goStart }}" style="cursor:pointer">I'm done</span>
+      <span onClick="{{ goClose }}" style="cursor:pointer">I'm done</span>
       <span style="font-family:'Ovo';font-size:17px;display:flex;gap:12px">
         <span onClick="{{ goSurf }}" style="cursor:pointer;transition:opacity .4s;opacity:{{ stepO.delay }}">Delay</span>
         <span onClick="{{ goDistract }}" style="cursor:pointer;transition:opacity .4s;opacity:{{ stepO.distract }}">Distract</span>
-        <span style="opacity:.45">Decide</span>
+        <span onClick="{{ goDecide }}" style="cursor:pointer;transition:opacity .4s;opacity:{{ stepO.decide }}">Decide</span>
       </span>
       <span>More help</span>
     </div>
@@ -65,8 +65,8 @@
       </div>
       <div style="position:absolute;left:18px;right:18px;display:flex;gap:8px;transition:bottom .9s cubic-bezier(.2,.7,.2,1);bottom:{{ pillsBottom }}px">
         <span onClick="{{ goDistract }}" style="flex:1;height:52px;border-radius:26px;background:rgba(233,230,223,.07);border:1px solid rgba(140,195,204,{{ pillA }});display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer" style-active="transform:scale(.96)">Try something</span>
-        <span style="flex:1;height:52px;border-radius:26px;background:rgba(233,230,223,.07);border:1px solid rgba(140,195,204,{{ pillA }});display:flex;align-items:center;justify-content:center;font-size:15px;opacity:.6">Talk it through</span>
-        <span onClick="{{ goStart }}" style="flex:1;height:52px;border-radius:26px;background:rgba(233,230,223,.07);border:1px solid rgba(140,195,204,{{ pillA }});display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer" style-active="transform:scale(.96)">It's eased</span>
+        <span onClick="{{ goDecide }}" style="flex:1;height:52px;border-radius:26px;background:rgba(233,230,223,.07);border:1px solid rgba(140,195,204,{{ pillA }});display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer" style-active="transform:scale(.96)">Talk it through</span>
+        <span onClick="{{ goClose }}" style="flex:1;height:52px;border-radius:26px;background:rgba(233,230,223,.07);border:1px solid rgba(140,195,204,{{ pillA }});display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer" style-active="transform:scale(.96)">It's eased</span>
       </div>
       <div onClick="{{ keepSurfing }}" style="position:absolute;bottom:56px;left:0;right:0;text-align:center;font-size:15px;color:#d6e4e6;cursor:pointer;transition:opacity .6s;opacity:{{ keepO }};pointer-events:{{ keepPe }}">Keep surfing</div>
     </div>
@@ -97,6 +97,165 @@
       <div data-ride="40" style="position:absolute;top:0;left:0;right:0;text-align:center;font-size:13px;color:#a9bfc2">Pull the water up to say where it is</div>
       <div onClick="{{ goDistract }}" style="position:absolute;bottom:34px;left:50%;transform:translateX(-50%);padding:12px 20px;white-space:nowrap;font-size:15px;color:#d6e4e6;cursor:pointer">Pick something else</div>
     </div>
+    <div style="position:absolute;inset:0;transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1);opacity:{{ s.decide.o }};transform:translateY({{ s.decide.y }}px);pointer-events:{{ s.decide.pe }}">
+      <div style="position:absolute;top:116px;left:28px;right:40px;font-family:'Ovo';font-size:31px;line-height:1.2">Talk it through</div>
+      <div style="position:absolute;top:186px;left:18px;right:18px;display:flex;flex-direction:column;gap:10px">
+        <div onClick="{{ goTape }}" style="cursor:pointer;padding:18px 20px;border-radius:22px;background:rgba(18,20,24,.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(140,195,204,.22);display:flex;flex-direction:column;gap:4px;transition:transform .2s" style-active="transform:scale(.98)">
+          <span style="font-family:'Ovo';font-size:23px">Play it forward</span><span style="font-size:15px;color:#b3b8bf">Walk through the next few hours.</span>
+        </div>
+        <div onClick="{{ goThought }}" style="cursor:pointer;padding:18px 20px;border-radius:22px;background:rgba(18,20,24,.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(140,195,204,.22);display:flex;flex-direction:column;gap:4px;transition:transform .2s" style-active="transform:scale(.98)">
+          <span style="font-family:'Ovo';font-size:23px">The thought</span><span style="font-size:15px;color:#b3b8bf">Name the thought that says go ahead.</span>
+        </div>
+        <div onClick="{{ goWords }}" style="cursor:pointer;padding:18px 20px;border-radius:22px;background:rgba(18,20,24,.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(140,195,204,.22);display:flex;flex-direction:column;gap:4px;transition:transform .2s" style-active="transform:scale(.98)">
+          <span style="font-family:'Ovo';font-size:23px">Your words</span><span style="font-size:15px;color:#b3b8bf">What you wrote when things were calmer.</span>
+        </div>
+      </div>
+      <div style="position:absolute;bottom:40px;left:18px;right:18px;display:flex;gap:8px">
+        <span onClick="{{ goSurf }}" style="flex:1;height:52px;border-radius:26px;background:rgba(233,230,223,.07);border:1px solid rgba(140,195,204,.3);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;backdrop-filter:blur(8px)" style-active="transform:scale(.96)">Back to the wave</span>
+      </div>
+    </div>
+
+    <div style="position:absolute;inset:0;transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1);opacity:{{ s.tape.o }};transform:translateY({{ s.tape.y }}px);pointer-events:{{ s.tape.pe }}">
+      <div style="position:absolute;top:112px;left:28px;font-size:14px;color:#a9bfc2">{{ tapeProgress }}</div>
+      <div style="position:absolute;left:28px;right:36px;display:flex;flex-direction:column;gap:14px;transition:top 1.2s cubic-bezier(.3,.6,.2,1),opacity .5s;top:{{ tapeTop }}px;opacity:{{ tapeO }}">
+        <div style="font-family:'Ovo';font-size:27px;line-height:1.28;color:{{ tapeColor }}">{{ tapeText }}</div>
+        <span onClick="{{ toggleNote }}" style="font-size:15px;color:#d6e4e6;cursor:pointer;text-decoration:underline;text-underline-offset:3px;align-self:flex-start;padding:6px 0">Write it (optional)</span>
+        <sc-if value="{{ noteOpen }}" hint-placeholder-val="{{ false }}">
+          <textarea placeholder="Your note" style="height:96px;border-radius:16px;background:rgba(18,20,24,.55);border:1px solid rgba(140,195,204,.3);color:#d2b98f;font:inherit;font-size:17px;padding:12px 14px;resize:none;outline:none"></textarea>
+        </sc-if>
+      </div>
+      <div style="position:absolute;bottom:40px;left:18px;right:18px;display:flex;gap:8px">
+        <span onClick="{{ tapeNext }}" style="flex:1;height:56px;border-radius:28px;background:rgba(233,230,223,.1);border:1px solid rgba(140,195,204,.55);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px)" style-active="transform:scale(.97)">{{ tapeNextLabel }}</span>
+      </div>
+    </div>
+
+    <div style="position:absolute;inset:0;transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1);opacity:{{ s.thought.o }};transform:translateY({{ s.thought.y }}px);pointer-events:{{ s.thought.pe }}">
+      <div style="position:absolute;top:104px;left:28px;right:40px;font-family:'Ovo';font-size:25px;line-height:1.25;transition:opacity .5s;opacity:{{ thListO }}">Is one of these thoughts here?</div>
+      <div style="position:absolute;top:214px;left:28px;right:28px;display:flex;flex-direction:column;transition:opacity .6s,filter .6s,transform .9s cubic-bezier(.3,.6,.2,1);opacity:{{ thListO }};filter:blur({{ thListBlur }}px);transform:translateY({{ thListY }}px);pointer-events:{{ thListPe }}">
+        <sc-for list="{{ thoughts }}" as="t" hint-placeholder-count="7">
+          <span onClick="{{ t.pick }}" style="padding:9px 0;font-size:{{ t.size }}px;opacity:{{ t.op }};cursor:pointer">{{ t.thought }}</span>
+        </sc-for>
+        <span onClick="{{ goDecide }}" style="padding:16px 0 0;font-size:15px;color:#d6e4e6;cursor:pointer;text-decoration:underline;text-underline-offset:3px;align-self:flex-start">None of these</span>
+      </div>
+      <div style="position:absolute;top:150px;left:28px;right:32px;display:flex;flex-direction:column;gap:18px;transition:opacity .9s .3s,transform 1.2s cubic-bezier(.2,.7,.2,1) .2s;opacity:{{ ctrO }};transform:translateY({{ ctrY }}px);pointer-events:{{ ctrPe }}">
+        <span style="font-size:17px;color:#8a9099">{{ thSelThought }}</span>
+        <div style="font-family:'Ovo';font-size:31px;line-height:1.25;color:#d2b98f;border-left:2px solid #d2b98f;padding-left:16px">{{ thSelCounter }}</div>
+      </div>
+      <div style="position:absolute;bottom:40px;left:18px;right:18px;display:flex;gap:8px;transition:opacity .6s .6s;opacity:{{ ctrO }};pointer-events:{{ ctrPe }}">
+        <span onClick="{{ thAnother }}" style="flex:1;height:52px;border-radius:26px;background:rgba(233,230,223,.07);border:1px solid rgba(140,195,204,.3);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;backdrop-filter:blur(8px)">Another thought</span>
+        <span onClick="{{ goDecide }}" style="flex:1.4;height:52px;border-radius:26px;background:rgba(233,230,223,.1);border:1px solid rgba(140,195,204,.55);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px);text-align:center;padding:0 10px">Back to talking it through</span>
+      </div>
+    </div>
+
+    <div style="position:absolute;inset:0;transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1);opacity:{{ s.words.o }};transform:translateY({{ s.words.y }}px);pointer-events:{{ s.words.pe }}">
+      <div style="position:absolute;top:116px;left:28px;right:36px;display:flex;flex-direction:column;gap:22px">
+        <span style="font-family:'Ovo';font-size:19px;color:#8cc3cc">Why this matters to you</span>
+        <span style="font-size:16px;line-height:1.45;color:#b3b8bf">You haven't written these yet. When things are calmer, Setup can help.</span>
+        <div style="font-family:'Ovo';font-size:27px;line-height:1.28;color:#d2b98f;border-left:2px solid #d2b98f;padding-left:16px">This feeling is strong, and it's temporary.</div>
+        <div style="font-family:'Ovo';font-size:27px;line-height:1.28;color:#d2b98f;border-left:2px solid #d2b98f;padding-left:16px">Getting through the next hour is enough.</div>
+      </div>
+      <div style="position:absolute;bottom:40px;left:18px;right:18px;display:flex">
+        <span onClick="{{ goDecide }}" style="flex:1;height:52px;border-radius:26px;background:rgba(233,230,223,.07);border:1px solid rgba(140,195,204,.3);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;backdrop-filter:blur(8px)">Back to talking it through</span>
+      </div>
+    </div>
+
+    <div style="position:absolute;inset:0;transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1);opacity:{{ s.close.o }};transform:translateY({{ s.close.y }}px);pointer-events:{{ s.close.pe }}">
+      <div style="position:absolute;inset:0;transition:opacity .45s;opacity:{{ csO }}">
+      <sc-if value="{{ cs.rating }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:118px;left:28px;right:40px;font-family:'Ovo';font-size:31px">Where is it now?</div>
+        <div data-ride="-150" style="position:absolute;top:0;left:26px;display:flex;align-items:baseline;gap:14px;transition:opacity .4s;opacity:{{ closeNumO }}">
+          <span style="font-size:112px;line-height:1;letter-spacing:-.03em">{{ closeNum }}</span><span style="font-size:20px;color:#d2b98f">{{ closeAnchor }}</span>
+        </div>
+        <div data-ride="-11" data-rx=".83" style="position:absolute;top:0;left:296px;width:56px;height:22px;border-radius:11px;background:rgba(233,230,223,.12);border:1px solid rgba(233,230,223,.4)"></div>
+        <div style="position:absolute;bottom:40px;left:18px;right:18px;display:flex;gap:8px">
+          <span onClick="{{ closeRateNext }}" style="flex:1.4;height:56px;border-radius:28px;background:rgba(233,230,223,.1);border:1px solid rgba(140,195,204,.55);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px)">Next</span>
+          <span onClick="{{ closeRateSkip }}" style="flex:1;height:56px;border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#d6e4e6;cursor:pointer">Skip</span>
+        </div>
+      </sc-if>
+      <sc-if value="{{ cs.outcome }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:118px;left:28px;right:40px;font-family:'Ovo';font-size:31px">Where are you now?</div>
+        <div data-ride="-74" style="position:absolute;top:0;left:18px;right:18px;display:flex;gap:8px">
+          <span onClick="{{ oc.passed }}" style="flex:1;height:52px;border-radius:26px;background:rgba(18,20,24,.45);border:1px solid rgba(140,195,204,.45);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;backdrop-filter:blur(8px)">It passed</span>
+          <span onClick="{{ oc.quieter }}" style="flex:1;height:52px;border-radius:26px;background:rgba(18,20,24,.45);border:1px solid rgba(140,195,204,.45);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;backdrop-filter:blur(8px)">It's quieter</span>
+          <span onClick="{{ oc.strong }}" style="flex:1;height:52px;border-radius:26px;background:rgba(18,20,24,.45);border:1px solid rgba(140,195,204,.45);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;backdrop-filter:blur(8px)">Still strong</span>
+        </div>
+        <div data-ride="36" style="position:absolute;top:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;padding:0 18px">
+          <span onClick="{{ oc.more }}" style="font-size:14px;color:#d6e4e6;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:6px 10px;transition:opacity .4s;opacity:{{ moreLinkO }}">Something else</span>
+          <div style="display:flex;gap:8px;width:100%;transition:opacity .6s,transform .8s cubic-bezier(.2,.7,.2,1);opacity:{{ moreO }};transform:translateY({{ moreY }}px);pointer-events:{{ morePe }}">
+            <span onClick="{{ oc.used }}" style="flex:1;height:48px;border-radius:24px;background:rgba(233,230,223,.05);border:1px solid rgba(140,195,204,.22);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer">I used</span>
+            <span onClick="{{ oc.stopped }}" style="flex:1;height:48px;border-radius:24px;background:rgba(233,230,223,.05);border:1px solid rgba(140,195,204,.22);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer">I had to stop</span>
+            <span onClick="{{ oc.private }}" style="flex:1;height:48px;border-radius:24px;background:rgba(233,230,223,.05);border:1px solid rgba(140,195,204,.22);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer">Rather not say</span>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ cs.strong }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:118px;left:28px;right:40px;font-family:'Ovo';font-size:31px">It's still strong.</div>
+        <div style="position:absolute;bottom:40px;left:18px;right:18px;display:flex;flex-direction:column;gap:8px">
+          <span onClick="{{ anotherRound }}" style="height:56px;border-radius:28px;background:rgba(233,230,223,.1);border:1px solid rgba(140,195,204,.55);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px)">Start another round</span>
+          <span onClick="{{ strongNext }}" style="height:52px;border-radius:26px;background:rgba(233,230,223,.07);border:1px solid rgba(140,195,204,.3);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;backdrop-filter:blur(8px)">Check on me in 10 min</span>
+          <span onClick="{{ strongNext }}" style="height:52px;border-radius:26px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#d6e4e6;cursor:pointer">Continue</span>
+        </div>
+      </sc-if>
+      <sc-if value="{{ cs.triggers }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:118px;left:28px;right:40px;font-family:'Ovo';font-size:31px">What set it off?</div>
+        <div style="position:absolute;top:186px;left:18px;right:18px;display:flex;flex-wrap:wrap;gap:8px">
+          <sc-for list="{{ trig }}" as="g" hint-placeholder-count="13">
+            <span onClick="{{ g.toggle }}" style="height:44px;padding:0 16px;border-radius:22px;display:flex;align-items:center;gap:6px;font-size:15px;cursor:pointer;backdrop-filter:blur(8px);transition:background .25s,border-color .25s,color .25s;background:{{ g.bg }};border:1px solid {{ g.bd }};color:{{ g.fg }}">{{ g.label }}</span>
+          </sc-for>
+        </div>
+        <div style="position:absolute;bottom:40px;left:18px;right:18px;display:flex;gap:8px">
+          <span onClick="{{ closeNext }}" style="flex:1.4;height:56px;border-radius:28px;background:rgba(233,230,223,.1);border:1px solid rgba(140,195,204,.55);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px)">Next</span>
+          <span onClick="{{ closeNext }}" style="flex:1;height:56px;border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#d6e4e6;cursor:pointer">Skip</span>
+        </div>
+      </sc-if>
+      <sc-if value="{{ cs.seeking }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:118px;left:28px;right:40px;font-family:'Ovo';font-size:29px;line-height:1.22">What was the urge trying to get for you?</div>
+        <div style="position:absolute;top:236px;left:18px;right:18px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <sc-for list="{{ seekOpts }}" as="k" hint-placeholder-count="6">
+            <span onClick="{{ k.pick }}" style="height:56px;border-radius:20px;background:rgba(18,20,24,.45);border:1px solid rgba(140,195,204,.3);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;backdrop-filter:blur(8px)" style-active="transform:scale(.97)">{{ k.label }}</span>
+          </sc-for>
+        </div>
+        <div onClick="{{ closeNext }}" style="position:absolute;bottom:40px;left:50%;transform:translateX(-50%);padding:14px 24px;font-size:15px;color:#d6e4e6;cursor:pointer">Skip</div>
+      </sc-if>
+      <sc-if value="{{ cs.summary }}" hint-placeholder-val="{{ false }}">
+        <svg width="390" height="844" viewBox="0 0 390 844" style="position:absolute;inset:0;pointer-events:none">
+          <path d="{{ markD }}" fill="none" stroke="#d2b98f" stroke-width="1.5" stroke-opacity=".75" stroke-dasharray="2 5" stroke-linecap="round"></path>
+          <sc-for list="{{ marks }}" as="m" hint-placeholder-count="0"><circle cx="{{ m.x }}" cy="{{ m.y }}" r="3.5" fill="#d2b98f"></circle></sc-for>
+        </svg>
+        <div style="position:absolute;top:118px;left:28px;right:36px;font-family:'Ovo';font-size:29px;line-height:1.25">{{ summaryText }}</div>
+        <div style="position:absolute;top:236px;left:28px;font-size:15px;color:#8a9099">Moments you've stayed with: 1</div>
+        <div style="position:absolute;bottom:40px;left:18px;right:18px;display:flex">
+          <span onClick="{{ closeNext }}" style="flex:1;height:56px;border-radius:28px;background:rgba(233,230,223,.1);border:1px solid rgba(140,195,204,.55);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px)">Next</span>
+        </div>
+      </sc-if>
+      <sc-if value="{{ cs.offer }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;top:118px;left:28px;right:40px;font-family:'Ovo';font-size:31px;line-height:1.2">Want me to check on you today?</div>
+        <div style="position:absolute;bottom:40px;left:18px;right:18px;display:flex;flex-direction:column;gap:8px">
+          <span onClick="{{ finishMoment }}" style="height:56px;border-radius:28px;background:rgba(233,230,223,.1);border:1px solid rgba(140,195,204,.55);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px)">Yes</span>
+          <span onClick="{{ finishMoment }}" style="height:52px;border-radius:26px;background:rgba(233,230,223,.07);border:1px solid rgba(140,195,204,.3);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;backdrop-filter:blur(8px)">In 10 min</span>
+          <span onClick="{{ finishMoment }}" style="height:52px;border-radius:26px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#d6e4e6;cursor:pointer">No thanks</span>
+        </div>
+      </sc-if>
+      </div>
+    </div>
+
+    <div style="position:absolute;inset:0;transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform 1s cubic-bezier(.2,.7,.2,1);opacity:{{ s.after.o }};transform:translateY({{ s.after.y }}px);pointer-events:{{ s.after.pe }}">
+      <div style="position:absolute;top:110px;left:28px;right:32px;display:flex;flex-direction:column;gap:14px">
+        <div style="font-family:'Ovo';font-size:31px;line-height:1.2">You're still here.</div>
+        <div style="font-size:18px;line-height:1.45;color:#b3b8bf">The day isn't over. Let's get you through the rest of it safely.</div>
+        <ul style="margin:8px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:14px;font-size:16px;line-height:1.45">
+          <li style="display:flex;gap:12px"><span style="flex:none;width:6px;height:6px;border-radius:50%;background:#8a9099;margin-top:9px"></span><span>Try not to be alone. If you are, Never Use Alone (<a href="tel:18004843731" style="color:#8cc3cc;font-weight:700;white-space:nowrap">1-800-484-3731</a>) stays on the line and sends help if you stop responding.</span></li>
+          <li style="display:flex;gap:12px"><span style="flex:none;width:6px;height:6px;border-radius:50%;background:#8a9099;margin-top:9px"></span><span>Supply can contain fentanyl. Keep naloxone (Narcan) close if you can.</span></li>
+          <li style="display:flex;gap:12px"><span style="flex:none;width:6px;height:6px;border-radius:50%;background:#8a9099;margin-top:9px"></span><span>Call <a href="tel:911" style="color:#8cc3cc;font-weight:700">911</a> for chest pain, overheating, a seizure, trouble breathing, or if you're scared.</span></li>
+          <li style="display:flex;gap:12px"><span style="flex:none;width:6px;height:6px;border-radius:50%;background:#8a9099;margin-top:9px"></span><span>Drink water. Eat something small. Rest when you can.</span></li>
+          <li style="display:flex;gap:12px"><span style="flex:none;width:6px;height:6px;border-radius:50%;background:#8a9099;margin-top:9px"></span><span><a href="tel:988" style="color:#8cc3cc;font-weight:700">988</a> is there if things feel heavy. <a href="sms:988" style="color:#8cc3cc">Text 988</a></span></li>
+        </ul>
+      </div>
+      <div style="position:absolute;bottom:40px;left:18px;right:18px;display:flex;flex-direction:column;gap:6px">
+        <span onClick="{{ afterCheck }}" style="height:56px;border-radius:28px;background:rgba(233,230,223,.1);border:1px solid rgba(140,195,204,.55);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;cursor:pointer">Check on me later</span>
+        <span onClick="{{ goStart }}" style="height:48px;display:flex;align-items:center;justify-content:center;font-size:15px;color:#b3b8bf;cursor:pointer">Home</span>
+      </div>
+    </div>
   </div>
 
   <div style="display:flex;gap:18px;font-size:14px;color:#8a9099">
@@ -105,6 +264,9 @@
     <span onClick="{{ goSurf }}" style="cursor:pointer" style-hover="color:#e9e6df">Surf</span>
     <span onClick="{{ goDistract }}" style="cursor:pointer" style-hover="color:#e9e6df">Distract</span>
     <span onClick="{{ goDoingDemo }}" style="cursor:pointer" style-hover="color:#e9e6df">Doing</span>
+    <span onClick="{{ goDecide }}" style="cursor:pointer" style-hover="color:#e9e6df">Decide</span>
+    <span onClick="{{ goClose }}" style="cursor:pointer" style-hover="color:#e9e6df">Close</span>
+    <span onClick="{{ goAfter }}" style="cursor:pointer" style-hover="color:#e9e6df">After</span>
     <span style="color:#2e3540">|</span>
     <span onClick="{{ nextStyle }}" style="cursor:pointer;color:#b3b8bf" style-hover="color:#e9e6df">Water: {{ styleName }} ↻</span>
   </div>
@@ -113,18 +275,23 @@
 <script type="text/x-dc" data-dc-script data-props="{&quot;waterStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Cycling&quot;,&quot;Random&quot;,&quot;Glass&quot;,&quot;Storm&quot;,&quot;Boil&quot;],&quot;default&quot;:&quot;Cycling&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;delayMinutes&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[5,10,15,20],&quot;default&quot;:15,&quot;tsType&quot;:&quot;number&quot;},&quot;slosh&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:2,&quot;step&quot;:0.1,&quot;default&quot;:1,&quot;tsType&quot;:&quot;number&quot;}}">
 const OPTS=[["Take a shower","low"],["Drink a glass of cold water","low"],["Eat something","low"],["Lie down under a blanket","low"],["Stretch for five minutes","low"],["Go to a different room","low"],["Step outside","low"],["Make tea","low"],["Tidy one small thing","low"],["Put on a show you've seen before","low"],["Listen to a podcast or album","low"],["Play a simple phone game","low"],["Text someone about anything else","low"],["Walk around the block","medium"],["Go somewhere public","medium"],["Wash the dishes","medium"]];
 const LINES=["You don't have to do anything with this. Just watch it.","Breathe with the wave. In as it rises, out as it falls.","Urges build, peak, and pass. You're watching one do that.","Still here. Still watching."];
-const ORDER=['start','distance','surf','distract','doing'];
+const ORDER=['start','distance','surf','distract','doing','decide','tape','thought','words','close','after'];
+const TAPE=['If you went with the urge, what does the next hour look like?','What about tonight?','What about tomorrow morning?','And if you ride this out, what does tomorrow morning look like?'];
+const THOUGHTS=[['Just once.','I know where once goes. This will pass without it.'],["I've earned it.","I've earned a good night. There are other ways to give myself one."],['I can handle it.','Handling it means not testing it tonight.'],["I'll start fresh tomorrow.",'Tomorrow-me needs me to get through tonight.'],['No one will know.',"I'll know, and I'm the one waking up tomorrow."],["I can't take this feeling.","It's strong and it's temporary. I can watch it peak and fall."],['Nothing else will help.','Nothing will feel as fast. Something can still help a little.']];
+const TRIGS=['Hungry','Angry','Lonely','Tired','A person','A place','Time of day','A message or app','Stress','Boredom','Celebrating',"Can't sleep",'Money came in'];
+const SEEK=['Relief','Energy','Connection','Escape','Confidence','Something else'];
+const CSTAGES=['rating','outcome','triggers','seeking','summary','offer'];
 const anchor=v=>v<=0?'Nothing':v<=2?'Faint':v<=4?'Noticeable':v<=6?'Strong':v<=8?'Very strong':'Most ever';
 const LV=v=>.1+.08*v;
 const mmss=ms=>{ms=Math.max(0,ms);const s=Math.floor(ms/1000);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
 const STYLES=['glass','storm','boil'];const SNAME={glass:'Glass',storm:'Storm',boil:'Boil'};
 const NH=64;
-const BAMP={start:.012,distance:.03,surf:.05,distract:.012,doing:.03};
+const BAMP={start:.012,distance:.03,surf:.05,distract:.012,doing:.03,decide:.02,tape:.015,thought:.015,words:.02,close:.02,after:0};
 const breathAt=(t)=>{const p=((t%10)+10)%10;const x=p<4?p/4:1-(p-4)/6;return {b:.5-.5*Math.cos(Math.PI*x),inh:p<4,p};};
-const BASE={start:[1,0,0,1],distance:[.8,.6,0,1],surf:[1.3,1,0,1],distract:[.6,0,0,1],doing:[.25,.4,.2,.4]};
+const BASE={start:[1,0,0,1],distance:[.8,.6,0,1],surf:[1.3,1,0,1],distract:[.6,0,0,1],doing:[.25,.4,.2,.4],decide:[.35,0,.1,.5],tape:[.4,0,0,.6],thought:[.5,0,0,.8],words:[.4,0,0,.7],close:[.6,0,0,1],after:[0,0,.3,.25]};
 
 class Component extends DCLogic {
-  state={screen:'start',ratings:[],startedAt:Date.now(),extra:0,now:Date.now(),line:0,lineO:1,low:false,leaving:null,option:'Make tea',doingSince:Date.now(),dragV:null,style:'glass',cyc:0};
+  state={screen:'start',ratings:[],startedAt:Date.now(),extra:0,now:Date.now(),line:0,lineO:1,low:false,leaving:null,option:'Make tea',doingSince:Date.now(),dragV:null,style:'glass',cyc:0,tape:0,tapeO:1,noteOpen:false,th:null,cstage:'outcome',csO:1,more:false,trigSel:[],closeV:null};
   rootRef=React.createRef();
   L=.3; vel=0; target=.3; dragging=false; H=new Float32Array(NH); HV=new Float32Array(NH); HB=new Uint8Array(NH); fx=.5; fL=.3; kick=0; bm=0;
   pickStyle(cyc){const ws=this.props.waterStyle??'Cycling';if(ws==='Random')return STYLES[Math.floor(Math.random()*3)];if(ws==='Cycling')return STYLES[cyc%3];return ws.toLowerCase();}
@@ -163,7 +330,7 @@ class Component extends DCLogic {
       const root=this.rootRef.current; if(!root) return;
       const cv=root.querySelector('canvas[data-tide]');
       const b=BASE[this.state.screen]; const sl=(this.props.slosh??1);
-      if(cv){cv.dataset.gl=this.state.style;cv._h=this.HB;cv.dataset.l=LD.toFixed(4);cv.dataset.p=`${b[0]},0,1,0`;cv.dataset.q=`${b[2]},0`;cv.dataset.s=b[3];}
+      const scn=this.state.screen;if(cv){cv.dataset.gl=scn==='after'?'glass':this.state.style;cv._h=this.HB;cv.dataset.l=LD.toFixed(4);cv.dataset.p=`${b[0]},0,1,0`;cv.dataset.q=`${scn==='tape'?[0,.15,.32,0][this.state.tape]:b[2]},0`;cv.dataset.s=b[3];}
       root.querySelectorAll('[data-ride]').forEach(el=>{const hx=this.H[Math.round((+(el.dataset.rx||.5))*(NH-1))];el.style.transform=`translateY(${(1-LD-hx)*844+ +el.dataset.ride}px)`;});
       const cue=root.querySelector('[data-cue]');if(cue){const ph=br.inh?br.p/4:(br.p-4)/6;cue.textContent=br.inh?'in':'out';cue.style.opacity=(Math.sin(Math.PI*Math.min(1,ph))*.9).toFixed(3);}
     };
@@ -172,15 +339,16 @@ class Component extends DCLogic {
   componentWillUnmount(){clearInterval(this.iv);clearInterval(this.gv);cancelAnimationFrame(this.raf);clearTimeout(this.ct);}
 
   lastV(){const r=this.state.ratings;return r.length?r[r.length-1].v:null;}
-  go(screen){
+  go(screen,extra={}){
     const v=this.lastV();
-    const tgt={start:v==null?.3:LV(v),distance:v==null?.4:LV(v),surf:v==null?.4:LV(v),distract:.78,doing:.24}[screen];
+    const lv=v==null?.4:LV(v);
+    const tgt={start:v==null?.3:LV(v),distance:lv,surf:lv,distract:.78,doing:.24,decide:lv,tape:.8,thought:.78,words:.3,close:lv,after:.06}[screen];
     this.target=tgt;
     const dir=tgt>this.L?1:-1;for(let i=0;i<NH;i++)this.HV[i]+=dir*Math.cos(Math.PI*i/(NH-1))*.35*(this.props.slosh??1);
-    this.setState({screen,leaving:null,dragV:null});
+    this.setState({screen,leaving:null,dragV:null,...extra});
   }
   vFromEvent(e){const r=this.rootRef.current.getBoundingClientRect();const y=(e.clientY-r.top)/r.height;this.fx=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width));const L=Math.min(.92,Math.max(.08,1-y));return {L,v:Math.max(0,Math.min(10,Math.round((L-.1)/.08)))};}
-  canDrag(){return ['start','surf','doing'].includes(this.state.screen);}
+  canDrag(){const s=this.state.screen;return ['start','surf','doing'].includes(s)||(s==='close'&&this.state.cstage==='rating');}
   onDown=(e)=>{
     if(!this.canDrag()) return;
     for(let n=e.target;n&&n!==e.currentTarget;n=n.parentElement){ if(n.style&&n.style.cursor==='pointer') return; }
@@ -199,8 +367,13 @@ class Component extends DCLogic {
     if(sc==='start'){ this.ct=setTimeout(()=>{ this.setState(s=>({ratings:[...s.ratings.filter(r=>r.src!=='initial'),{t:0,v,src:'initial'}],dragV:null}),()=>this.go('distance')); },900); }
     else if(sc==='surf'){ add('manual'); this.setState({dragV:null}); }
     else if(sc==='doing'){ add('return'); this.ct=setTimeout(()=>this.go('surf'),700); }
+    else if(sc==='close'){ this.setState({closeV:v}); }
   };
   nextLine=()=>{ this.setState({lineO:0}); setTimeout(()=>this.setState(s=>({line:(s.line+1)%LINES.length,lineO:1})),450); };
+  tapeTo(i){ this.setState({tapeO:0}); setTimeout(()=>{ this.setState({tape:i,tapeO:1,noteOpen:false}); this.target=i===3?.5:.8; for(let k=0;k<NH;k++)this.HV[k]+=Math.cos(Math.PI*k/(NH-1))*(i===3?-.3:.15); },500); }
+  stageTo(st){ if(st==='done'){ this.go('start'); this.setState(s=>({ratings:[],startedAt:Date.now(),extra:0,cyc:s.cyc+1,style:this.pickStyle(s.cyc+1)})); return; } this.setState({csO:0}); setTimeout(()=>{ this.setState({cstage:st,csO:1,more:false}); if(st==='summary'){const v=this.lastV(); if(v!=null){this.target=LV(v);} } },380); }
+  nextStage(from){ const i=CSTAGES.indexOf(from); this.stageTo(i<0||i>=CSTAGES.length-1?'done':CSTAGES[i+1]); }
+  goClose(){ const r=this.state.ratings; const last=r.length?this.state.startedAt+r[r.length-1].t:null; const stale=last==null||Date.now()-last>120000; this.go('close',{cstage:stale?'rating':'outcome',csO:1,more:false,closeV:null,trigSel:[]}); }
   pick(label){
     if(this.state.leaving) return;
     this.setState({leaving:label});
@@ -227,7 +400,7 @@ class Component extends DCLogic {
     return {
       rootRef:this.rootRef,onDown:this.onDown,onMove:this.onMove,onUp:this.onUp,
       cursor:this.canDrag()?'ns-resize':'default',s,
-      stepO:{delay:['surf','start','distance'].includes(sc)?1:.45,distract:['distract','doing'].includes(sc)?1:.45},
+      stepO:{delay:['surf','start','distance'].includes(sc)?1:.45,distract:['distract','doing'].includes(sc)?1:.45,decide:['decide','tape','thought','words'].includes(sc)?1:.45},
       startNum:st.screen==='start'&&v!=null?String(v):(v!=null&&st.screen!=='start'?String(v):'–'),
       numColor:v==null?'#8a9099':'#e9e6df',startAnchor:v==null?'':anchor(v),
       startHint:v==null?'Drag the waterline. Higher is stronger.':'Let go to keep it.',
@@ -244,6 +417,30 @@ class Component extends DCLogic {
       numO:v==null?0:1,
       goDistance:go('distance'),goSurf:go('surf'),goSurfDone:go('surf'),goSurfSkip:go('surf'),goDistract:go('distract'),
       goDoingDemo:()=>{this.setState({doingSince:Date.now()});this.go('doing');},
+      goDecide:go('decide'),goTape:()=>this.go('tape',{tape:0,tapeO:1,noteOpen:false}),goThought:()=>this.go('thought',{th:null}),goWords:go('words'),
+      goClose:()=>this.goClose(),goAfter:()=>this.go('after'),
+      tapeProgress:`${st.tape+1} of 4`,tapeText:TAPE[st.tape],tapeTop:[230,330,440,190][st.tape],tapeO:st.tapeO,tapeColor:st.tape===3?'#e9e6df':(st.tape===2?'#c9d7d9':'#e9e6df'),
+      noteOpen:st.noteOpen,toggleNote:()=>this.setState(s2=>({noteOpen:!s2.noteOpen})),
+      tapeNext:()=>{ if(st.tape<3) this.tapeTo(st.tape+1); else this.go('decide'); },tapeNextLabel:st.tape<3?'Next':'Back to talking it through',
+      thoughts:THOUGHTS.map(([t,c],i)=>({thought:t,size:22-i*.6,op:+(1-i*.07).toFixed(2),pick:()=>{this.setState({th:i});this.target=.4;for(let k=0;k<NH;k++)this.HV[k]+=-Math.cos(Math.PI*k/(NH-1))*.3;}})),
+      thListO:st.th==null?1:0,thListBlur:st.th==null?0:6,thListY:st.th==null?0:60,thListPe:st.th==null?'auto':'none',
+      ctrO:st.th==null?0:1,ctrY:st.th==null?180:0,ctrPe:st.th==null?'none':'auto',
+      thSelThought:st.th==null?'':THOUGHTS[st.th][0],thSelCounter:st.th==null?'':THOUGHTS[st.th][1],
+      thAnother:()=>{this.setState({th:null});this.target=.78;},
+      cs:Object.fromEntries(['rating','outcome','strong','triggers','seeking','summary','offer'].map(k=>[k,st.cstage===k])),csO:st.csO,
+      closeNumO:(st.dragV!=null||st.closeV!=null)&&sc==='close'?1:0,closeNum:String(st.dragV??st.closeV??''),closeAnchor:(st.dragV??st.closeV)!=null?anchor(st.dragV??st.closeV):'',
+      closeRateNext:()=>{ const v2=st.closeV; if(v2!=null) this.setState(s2=>({ratings:[...s2.ratings,{t:Date.now()-s2.startedAt,v:v2,src:'close'}]})); this.nextStage('rating'); },
+      closeRateSkip:()=>this.nextStage('rating'),
+      oc:{passed:()=>this.nextStage('outcome'),quieter:()=>this.nextStage('outcome'),strong:()=>this.stageTo('strong'),more:()=>this.setState({more:true}),
+        used:()=>this.go('after'),stopped:()=>this.nextStage('outcome'),private:()=>this.nextStage('outcome')},
+      moreLinkO:st.more?0:1,moreO:st.more?1:0,moreY:st.more?0:-10,morePe:st.more?'auto':'none',
+      anotherRound:()=>{ this.setState(s2=>({ratings:[],startedAt:Date.now(),extra:0})); this.go('start'); },strongNext:()=>this.stageTo('triggers'),
+      trig:TRIGS.map(l=>{const on=st.trigSel.includes(l);return {label:on?'✓ '+l:l,bg:on?'rgba(140,195,204,.22)':'rgba(18,20,24,.45)',bd:on?'rgba(140,195,204,.8)':'rgba(140,195,204,.25)',fg:on?'#e9e6df':'#d6e4e6',toggle:()=>this.setState(s2=>({trigSel:on?s2.trigSel.filter(x=>x!==l):[...s2.trigSel,l]}))};}),
+      closeNext:()=>this.nextStage(st.cstage),
+      seekOpts:SEEK.map(l=>({label:l,pick:()=>this.nextStage('seeking')})),
+      summaryText:(()=>{const r=st.ratings;const mins=Math.max(1,Math.round(elapsed/60000));const d=mins<1?'less than a minute':mins+' min';if(r.length&&r[0].v-r[r.length-1].v>=1)return `You stayed with it ${d}. It went from ${r[0].v} to ${r[r.length-1].v}.`;return `You stayed with it ${d}.`;})(),
+      finishMoment:()=>this.stageTo('done'),
+      afterCheck:()=>this.go('close',{cstage:'summary',csO:1}),
     };
   }
 }

@@ -14,7 +14,12 @@ import { readPalette } from '../breath/common.js';
 import { onWaterFrame, surfaceY, waterLayer } from './water.js';
 
 /** Opacity of the visual on each tide screen. */
-const STRENGTH = { start: 0.5, distance: 0.7, surf: 0.7, distract: 0.22, doing: 0.6, moment: 0.35 };
+const STRENGTH = {
+  start: 0.5, distance: 0.7, surf: 0.7, distract: 0.22, doing: 0.6,
+  decide: 0.45, tape: 0.25, thought: 0.3, words: 0.5, close: 0.5,
+  after: 0, // After stays plain: safety information only (DD-089)
+  moment: 0.35,
+};
 const MAX_SIZE = 520;
 const CLIP_POINTS = 24;
 

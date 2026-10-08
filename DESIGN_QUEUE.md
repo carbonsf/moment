@@ -2,13 +2,12 @@
 
 Open design questions to revisit in the design pass. Each item links to where it can be seen live.
 
-## 1. The tide (DD-083 – DD-088), shipped in 1.0.6
+## 1. The tide (DD-083 – DD-089), whole moment flow since 1.0.7
 
-The slider and wave on Start, Distance, Surf, Distract and Doing are replaced by one persistent WebGL water layer: drag the waterline to rate. Water style Glass / Storm / Boil per moment (Settings → Motion → Water, default Cycling). The six breathing visuals now live inside the water (Settings → Motion → Breathing visual; Wave = the water alone).
+The slider and wave across the whole moment flow (Start through After) are replaced by one persistent WebGL water layer: drag the waterline to rate. Water style Glass / Storm / Boil per moment (Settings → Motion → Water, default Cycling). The six breathing visuals now live inside the water (Settings → Motion → Breathing visual; Wave = the water alone).
 
 **Open from the handoff**
 - VoiceOver: no `aria-valuetext` on the tide screens yet. Add an `sr-only` range input bound to `setWaterValue` if needed.
-- Decide, Close and After keep their old layouts over low, dim water. They're the next screens to redesign.
 - Battery: test a 30-minute moment on an older iPhone. Two WebGL layers run when Ink or Shallows is in the water. If it runs hot, lower the DPR cap in `ui/tide/gl.js` (and `inwater.js`) from 1.5 to 1.
 - Legibility: in-water visual strength per screen is in `STRENGTH` in `ui/tide/inwater.js`.
 - Fonts: PT Sans and Ovo ship with their OFL licenses in `web/fonts/`. The handoff's files are latin subsets; confirm the subsetting is fine under PT Sans's Reserved Font Name clause, or rename the family.

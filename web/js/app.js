@@ -9,13 +9,11 @@ import { h, clear, link, cssMs, reducedMotion } from './ui/dom.js';
 import { icon } from './ui/icons.js';
 import { openSheet, closeSheet } from './ui/sheet.js';
 import { initScrollHint } from './ui/scrollhint.js';
-import { mountWater, hideWater, setWaterScreen, setWaterStyle } from './ui/tide/water.js';
+import { mountWater, hideWater, setWaterStyle } from './ui/tide/water.js';
 import { resolveStyle } from './ui/tide/styles.js';
 import { setWaterVisual } from './ui/tide/inwater.js';
 import { resolveVisual } from './ui/breath/index.js';
 
-/** Moment screens that set their own water level (DD-083); other moment screens keep the water low and dim. */
-const TIDE_SCREENS = ['start', 'distance', 'surf', 'distract', 'doing'];
 import { resourcesFor } from './content/resources.js';
 import { ensureIdentity } from './services/identity.js';
 import { loadPushState } from './services/push.js';
@@ -128,7 +126,7 @@ async function render() {
     const am = await getActiveMoment();
     setWaterStyle(resolveStyle(app.settings.waterStyle, am));
     setWaterVisual(resolveVisual(app.settings.breathVisual, am));
-    if (!TIDE_SCREENS.includes(route.name)) setWaterScreen('moment'); // decide/close/after: low, dim, still visible
+    // each moment screen calls setWaterScreen itself (DD-089)
   } else {
     hideWater();
   }

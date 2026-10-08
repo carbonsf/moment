@@ -3,7 +3,7 @@
 'use strict';
 
 // Bump on every deploy (the changed bytes are how browsers detect an update); must match APP_VERSION in js/config.js.
-const CACHE_VERSION = 'moment-1.0.6';
+const CACHE_VERSION = 'moment-1.0.7';
 
 const PRECACHE = [
   './',

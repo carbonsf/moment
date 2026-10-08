@@ -55,6 +55,7 @@ export const S = {
     soFar: 'so far',
     pullUp: 'Pull the water up to say where it is',
     deeper: 'Deeper · more effort',
+    backToWave: 'Back to the wave',
   },
 
   update: {

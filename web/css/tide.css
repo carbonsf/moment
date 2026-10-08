@@ -123,8 +123,71 @@ html.tide-grab, html.tide-grab body { touch-action: none; overscroll-behavior: n
 .tide-back { background: none; border: 0; color: var(--c-text); font-weight: var(--fw-bold); font-size: 1.0625rem; min-height: var(--tap-min); padding: 0 var(--sp-4); }
 .tide-pull-hint { text-align: center; font-size: var(--fs-xs); color: var(--c-tide-ink-2); }
 
+/* ---------- Docked pill groups (Decide, Tape, Thought, Words, Close, After) */
+.tide-pills-1, .tide-pills-next, .tide-pills-stack {
+  position: fixed; left: 0; right: 0; z-index: 2;
+  bottom: calc(env(safe-area-inset-bottom) + 40px);
+  max-width: var(--content-max); margin: 0 auto; padding-inline: var(--gutter);
+}
+.tide-pills-1 { grid-template-columns: 1fr; }
+.tide-pills-next { grid-template-columns: 1.4fr 1fr; }
+.tide-pills-stack { grid-template-columns: 1fr; }
+.tide-pills-next .btn-text, .tide-pills-stack .btn-text { color: var(--c-tide-ink); }
+.tide-pill-float { background: rgba(18,20,24,.45); border-color: rgba(140,195,204,.45); }
+.tide-pill-quiet { min-height: var(--tap-min); background: rgba(233,230,223,.05); border-color: rgba(140,195,204,.22); }
+.tide-pill-tile { min-height: 56px; border-radius: 20px; background: rgba(18,20,24,.45); font-size: var(--fs-md); }
+.tide-pill-tile.is-selected { border-color: var(--c-accent); }
+
+/* ---------- Decide */
+.tide-hub-card { padding: 18px 20px; border-radius: 22px; gap: var(--sp-1); }
+.tide-hub-card:active { transform: scale(.98); }
+.tide-hub-title { font-family: var(--font-display); font-size: 1.4375rem; }
+.tide-label { font-family: var(--font-display); font-weight: var(--fw-regular); color: var(--c-accent); font-size: 1.1875rem; }
+.tide-own { font-family: var(--font-display); font-size: 1.6875rem; line-height: 1.28; }
+
+/* ---------- Play it forward: one depth per prompt */
+.tide-progress { color: var(--c-tide-ink-2); }
+.tide-tape { display: flex; flex-direction: column; gap: var(--sp-3); transition: transform 1.2s cubic-bezier(.3,.6,.2,1); }
+.tide-tape-prompt { font-size: 1.6875rem; line-height: 1.28; }
+.tide-tape-step-0 { transform: translateY(8vh); }
+.tide-tape-step-1 { transform: translateY(20vh); }
+.tide-tape-step-2 { transform: translateY(33vh); }
+.tide-tape-step-2 .tide-tape-prompt { color: #c9d7d9; }
+.tide-tape-step-3 { transform: translateY(4vh); }
+.tide-tape .collapsible summary { color: var(--c-tide-ink); }
+.tide-note { background: rgba(18,20,24,.55); border-color: rgba(140,195,204,.3); color: var(--c-sand); border-radius: var(--r-md); }
+
+/* ---------- The thought */
+.tide-options.is-sinking .tide-option { opacity: 0; filter: blur(6px); transform: translateY(60px); }
+.tide-options.is-sinking .tide-option.is-picked { opacity: .5; filter: none; transform: none; }
+.tide-surfacing { animation: tide-surface 1.2s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes tide-surface { from { opacity: 0; transform: translateY(180px); } to { opacity: 1; transform: none; } }
+
+/* ---------- Close */
+.tide-stage { display: flex; flex-direction: column; gap: var(--sp-5); transition: opacity var(--dur-base) var(--ease-out); }
+.tide-stage.is-changing { opacity: 0; }
+.tide-num-md { font-size: 7rem; }
+.tide-float { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-2); padding-inline: 0; }
+.tide-float .btn { pointer-events: auto; }
+.tide-rider.tide-float { padding-inline: var(--gutter); } /* riding pill rows keep the page gutter */
+.tide-below { display: flex; flex-direction: column; align-items: center; gap: var(--sp-2); }
+.tide-below .link { pointer-events: auto; color: var(--c-tide-ink); }
+.tide-float-more { width: 100%; opacity: 0; transform: translateY(-10px); pointer-events: none; transition: opacity 600ms, transform 800ms var(--ease-out); }
+.tide-float-more.is-open { opacity: 1; transform: none; }
+.tide-float-more.is-open .btn { pointer-events: auto; }
+.tide-float-more:not(.is-open) .btn { pointer-events: none; }
+.tide-chips .chip { background: rgba(18,20,24,.45); border-color: rgba(140,195,204,.25); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.tide-chips .chip.is-selected { background: rgba(140,195,204,.22); border-color: rgba(140,195,204,.8); }
+.tide-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); }
+.tide-marks-strong .tide-mark-line { stroke-opacity: .75; }
+
+/* ---------- After: plain */
+.view-after .after-list { font-size: var(--fs-md); }
+
 /* Reduced motion: no lift, instant states (water.js also stops the simulation and breath). */
-:root[data-motion="reduce"] .tide-option, :root[data-motion="reduce"] .tide-dock, :root[data-motion="reduce"] .tide-line { transition: none; }
+:root[data-motion="reduce"] .tide-option, :root[data-motion="reduce"] .tide-dock, :root[data-motion="reduce"] .tide-line,
+:root[data-motion="reduce"] .tide-tape, :root[data-motion="reduce"] .tide-stage, :root[data-motion="reduce"] .tide-float-more { transition: none; }
+:root[data-motion="reduce"] .tide-surfacing { animation: none; }
 
 /* DD-088 breathing visual inside the water: above the tide, below the app; clipped to the waterline in inwater.js */
 .tide-visual {
