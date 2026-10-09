@@ -1,0 +1,10 @@
+{
+  "name": "gratitude",
+  "private": true,
+  "type": "module",
+  "description": "Gratitude — a small PWA for keeping what you're grateful for. Built on Moment's look. See README.md.",
+  "scripts": {
+    "serve": "python3 -m http.server 8090 --directory web",
+    "icons": "node scripts/make-icons.mjs"
+  }
+}
