@@ -12,7 +12,6 @@ const PROMPTS = [
   'Something your body did for you.',
   'A moment you’d like to keep.',
   'Something you’d miss if it were gone.',
-  'Something that went right.',
   'A place, a sound, a taste.',
 ];
 
