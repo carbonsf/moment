@@ -10,6 +10,9 @@ import { createTideRenderer } from './gl.js';
 /** @typedef {[number, number, number]} RGB 0..1 */
 /** @typedef {{bg:RGB, accent:RGB, sand:RGB, text:RGB}} Palette */
 
+/** Moment's water styles (shaders.js). */
+export const STYLES = ['glass', 'storm', 'boil'];
+
 const NH = 64;
 const BREATH = 0.014;
 const AMP = 0.8;
@@ -133,6 +136,9 @@ export function setLevel(lv) {
   for (let i = 0; i < NH; i++) V[i] += dir * Math.cos((Math.PI * i) / (NH - 1)) * 0.3 * Math.min(1, Math.abs(lv - L) * 3);
   target = lv;
 }
+
+/** @param {string} id one of STYLES */
+export function setStyle(id) { renderer?.setStyle(id); }
 
 /** Darken the water under the surface (0..1). @param {number} d */
 export function setDim(d) { dimTarget = d; }

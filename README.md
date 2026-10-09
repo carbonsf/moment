@@ -2,7 +2,8 @@
 
 A small installable PWA for keeping what you're grateful for. It uses Moment's look and setup: the same WebGL water, tokens, fonts (PT Sans, Ovo), no build step, and GitHub Pages hosting.
 
-- **Today** (`#/today`): write one thing and tap **Keep it** (or press Return; Shift+Return for a new line). Each entry raises the water a little. Once a day, one older entry floats up from before.
+- **Today** (`#/today`): opens with the cursor in the box. Write one thing and tap **Keep it** (or press Return; Shift+Return for a new line). Each entry raises the water a little. **Prompt me** shows one of 20 prompts; **Another** moves to the next. Once a day, one older entry floats up from before.
+- **Water**: Moment's three styles take turns, one per day (glass, storm, boil). `?water=<id>` overrides it.
 - **Look back** (`#/past`): everything, grouped by day. Tap an entry to edit or delete it.
 - **Data**: IndexedDB on the device is the only copy. No backend, no network calls. **Export** (Look back) saves a JSON backup; **Import** merges one back in (matched by id, so importing twice adds nothing).
 

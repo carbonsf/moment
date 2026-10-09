@@ -2,17 +2,32 @@
 /** Gratitude: keep what you're grateful for, look back on it. Vanilla ES modules, no build (same shape as Moment). */
 import { h, clear, autosize, openSheet } from './dom.js';
 import { openDB } from './db.js';
-import { mountWater, setLevel, setDim, drop } from './water.js';
+import { mountWater, setLevel, setDim, drop, setStyle, STYLES } from './water.js';
 
 /** @typedef {import('./db.js').Entry} Entry */
 
+// Only shown when asked for ("Prompt me"); each tap moves to the next.
 const PROMPTS = [
-  'Something small is fine.',
   'Someone who made today easier.',
   'Something your body did for you.',
   'A moment you’d like to keep.',
   'Something you’d miss if it were gone.',
   'A place, a sound, a taste.',
+  'Something you usually walk right past.',
+  'Someone you haven’t thanked yet.',
+  'Something you have now that you once wished for.',
+  'Something that made you laugh.',
+  'A comfort you can count on.',
+  'A kindness you saw, even one not meant for you.',
+  'Something about where you live.',
+  'Something you use every day without thinking.',
+  'Something you did that you’re glad you did.',
+  'Someone who believed in you.',
+  'Something someone did so you didn’t have to.',
+  'Something outside your window.',
+  'A hard thing that taught you something.',
+  'Something you’re looking forward to.',
+  'A memory that still makes you smile.',
 ];
 
 const root = /** @type {HTMLElement} */ (document.getElementById('app'));
@@ -36,8 +51,17 @@ const shortDay = (ms) => new Date(ms).toLocaleDateString([], {
 });
 /** @param {number} ms */
 const clock = (ms) => new Date(ms).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-/** Stable small hash, so the day's prompt and surfaced entry don't change on every render. @param {string} s */
+/** Stable small hash, so the day's surfaced entry doesn't change on every render. @param {string} s */
 const hash = (s) => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+
+/** Moment's water styles, one per day in turn (glass, storm, boil, glass…). ?water=<id> overrides for a look. @param {number} ms */
+function styleForDay(ms) {
+  const o = new URLSearchParams(location.search).get('water');
+  if (o && STYLES.includes(o)) return o;
+  const d = new Date(ms);
+  const n = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000); // local calendar day number
+  return STYLES[n % STYLES.length];
+}
 
 const newId = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`);
 
@@ -105,10 +129,30 @@ function renderToday(view) {
   const titleFor = (/** @type {number} */ n) => (n ? 'What else?' : 'What are you grateful for?');
   const heading = h('h1', { class: 'title', tabindex: '-1' }, titleFor(todays.length));
   const input = /** @type {HTMLTextAreaElement} */ (h('textarea', {
-    class: 'compose-input', rows: 2, maxLength: 2000, enterKeyHint: 'done',
-    placeholder: PROMPTS[hash(today) % PROMPTS.length], 'aria-label': 'What are you grateful for?',
+    class: 'compose-input', rows: 2, maxLength: 2000, enterKeyHint: 'done', 'aria-label': 'What are you grateful for?',
   }));
+  input.dataset.autofocus = '';
   const keep = /** @type {HTMLButtonElement} */ (h('button', { type: 'submit', class: 'pill pill-sand', disabled: true }, 'Keep it'));
+
+  // No prompt unless asked. The first tap starts somewhere random; each tap after moves to the next.
+  let pi = -1;
+  const promptLine = h('p', { class: 'prompt-line', 'aria-live': 'polite', hidden: true });
+  const promptBtn = h('button', {
+    type: 'button', class: 'btn-text prompt-btn',
+    on: {
+      pointerdown: (/** @type {Event} */ e) => e.preventDefault(), // keep the keyboard up
+      click: () => {
+        pi = pi < 0 ? Math.floor(Math.random() * PROMPTS.length) : (pi + 1) % PROMPTS.length;
+        promptLine.hidden = false;
+        promptLine.classList.remove('is-new');
+        void promptLine.offsetWidth; // restart the fade
+        promptLine.classList.add('is-new');
+        promptLine.textContent = PROMPTS[pi];
+        promptBtn.textContent = 'Another';
+      },
+    },
+  }, 'Prompt me');
+  const resetPrompt = () => { pi = -1; promptLine.hidden = true; promptBtn.textContent = 'Prompt me'; };
   const list = h('ul', { class: 'kept-list on-water', 'aria-label': 'Kept today' }, todays.map((e) => keptItem(e)));
 
   const form = /** @type {HTMLFormElement} */ (h('form', {
@@ -132,9 +176,11 @@ function renderToday(view) {
         heading.textContent = titleFor(n);
         setLevel(levelFor(n));
         drop(0.5, 1.3);
+        resetPrompt();
+        input.focus({ preventScroll: true });
       },
     },
-  }, input, h('div', { class: 'compose-actions' }, keep)));
+  }, promptLine, input, h('div', { class: 'compose-actions' }, promptBtn, keep)));
 
   input.addEventListener('input', () => { keep.disabled = !input.value.trim(); autosize(input); });
   // Return keeps it; Shift+Return for a new line.
@@ -260,7 +306,8 @@ function render(o = {}) {
   clear(root).append(view);
   if (o.keepScroll) { window.scrollTo(0, y); return; }
   window.scrollTo(0, 0);
-  /** @type {HTMLElement|null} */ (view.querySelector('h1'))?.focus({ preventScroll: true });
+  // Today opens with the cursor in the box; elsewhere focus the heading (VoiceOver).
+  /** @type {HTMLElement|null} */ (view.querySelector('[data-autofocus]') || view.querySelector('h1'))?.focus({ preventScroll: true });
 }
 
 function applyMotion() {
@@ -272,6 +319,7 @@ async function boot() {
   applyMotion();
   window.matchMedia?.('(prefers-reduced-motion: reduce)').addEventListener?.('change', applyMotion);
   mountWater();
+  setStyle(styleForDay(Date.now()));
   db = await openDB();
   entries = await db.all();
   try { await navigator.storage?.persist?.(); } catch { /* best effort */ }
@@ -283,7 +331,7 @@ async function boot() {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState !== 'visible') return;
     const d = dayKey(Date.now());
-    if (d !== shownDay) { shownDay = d; render(); }
+    if (d !== shownDay) { shownDay = d; setStyle(styleForDay(Date.now())); render(); }
   });
   // Touching empty space drops a ripple into the water.
   document.addEventListener('pointerdown', (e) => {
