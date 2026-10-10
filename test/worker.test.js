@@ -334,6 +334,16 @@ describe('sync', () => {
     assert.equal(env.DB.rows("SELECT ct FROM records WHERE id = 'dup'")[0].ct, n2.ct);
   });
 
+  test('gratitude store (DD-090): accepted and returned like any other store', async () => {
+    const { env } = await makeEnv();
+    const d = await register(env);
+    const g = change('gratitude', 'g1', 100);
+    let r = await call(env, 'POST', '/v1/sync', { auth: d.auth, body: { changes: [g, change('moments', 'm1', 100)] } });
+    assert.equal(r.status, 200);
+    r = await call(env, 'POST', '/v1/sync', { auth: d.auth, body: { cursor: 0 } });
+    assert.deepEqual(r.body.changes.map((c) => [c.store, c.id]), [['gratitude', 'g1'], ['moments', 'm1']]);
+  });
+
   test('identities are isolated', async () => {
     const { env } = await makeEnv();
     const a = await register(env);

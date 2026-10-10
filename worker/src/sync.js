@@ -5,6 +5,7 @@ import { B64URL_RE, ID_RE, badRequest, isInt, isObj, json } from './util.js';
 /** Synced stores (§5.2). Anything else → 400 (§17). */
 export const SYNCED_STORES = new Set([
   'settings', 'profile', 'distractOptions', 'triggerTags', 'permissionThoughts', 'moments', 'checkins',
+  'gratitude', /* DD-090: Gratitude (sister app, /gratitude/) syncs its entries here */
 ]);
 export const MAX_CHANGES = 200;
 export const MAX_CT = 64 * 1024;

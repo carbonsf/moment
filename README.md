@@ -145,6 +145,10 @@ test/           node --test suites + D1 shim
 scripts/        make-icons.mjs (regenerates PNG icons, no dependencies)
 ```
 
+## Gratitude (sister app)
+
+`gratitude/` is a separate PWA built on Moment's look, deployed by the same Pages workflow to `/moment/gratitude/` and syncing through the same Worker as one more store (`gratitude`). See `gratitude/README.md` and DD-090.
+
 ## The tide
 
 The moment flow runs on one persistent WebGL water layer (`web/js/ui/tide/`): the waterline is the rating, and you drag it. Water styles and the breathing visual inside the water are chosen per moment in Settings → Motion. `?water=<glass|storm|boil>` and `?breath=<id>` override them for design review. Fonts (PT Sans, Ovo) are self-hosted in `web/fonts/` with their OFL licenses.
