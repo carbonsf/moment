@@ -3,6 +3,7 @@
 import { h, clear, autosize, openSheet } from './dom.js';
 import { openDB } from './db.js';
 import { mountWater, setLevel, setDim, drop, setStyle, STYLES } from './water.js';
+import { startSync, schedule, backupLink, adoptLink, writerId } from './sync.js';
 
 /** @typedef {import('./db.js').Entry} Entry */
 
@@ -33,8 +34,14 @@ const PROMPTS = [
 const root = /** @type {HTMLElement} */ (document.getElementById('app'));
 /** @type {Awaited<ReturnType<typeof openDB>>} */
 let db;
-/** All entries, oldest first. @type {Entry[]} */
+/** Live entries (not deleted), oldest first. @type {Entry[]} */
 let entries = [];
+/** What's in Today's box, so a re-render after sync doesn't lose it. */
+let draft = '';
+
+const loadEntries = async () => { entries = (await db.all()).filter((e) => !e.deleted); };
+/** Write an entry (stamped for sync), then sync soon. @param {Entry} e */
+const save = async (e) => { await db.put({ ...e, updatedAt: Date.now(), writer: writerId() }); schedule(); };
 
 // ---------- Time
 
@@ -87,31 +94,31 @@ function editEntry(e) {
     on: {
       click: async () => {
         if (!confirming) { confirming = true; del.textContent = 'Tap again to delete'; del.classList.add('is-confirming'); return; }
-        await db.del(e.id);
+        await save({ ...e, text: '', deleted: true }); // a tombstone, so the delete reaches other devices
         entries = entries.filter((x) => x.id !== e.id);
         close();
         render({ keepScroll: true });
       },
     },
   }, 'Delete');
-  const save = h('button', {
+  const saveBtn = h('button', {
     type: 'button', class: 'pill pill-sand',
     on: {
       click: async () => {
         const text = input.value.trim();
         if (!text) return;
-        const next = { ...e, text, updatedAt: Date.now() };
-        await db.put(next);
+        const next = { ...e, text };
+        await save(next);
         entries = entries.map((x) => (x.id === e.id ? next : x));
         close();
         render({ keepScroll: true });
       },
     },
   }, 'Save');
-  input.addEventListener('input', () => { autosize(input); /** @type {HTMLButtonElement} */ (save).disabled = !input.value.trim(); });
+  input.addEventListener('input', () => { autosize(input); /** @type {HTMLButtonElement} */ (saveBtn).disabled = !input.value.trim(); });
   const close = openSheet({
     title: `${longDay(e.createdAt)} · ${clock(e.createdAt)}`,
-    content: [input, h('div', { class: 'sheet-actions' }, del, save)],
+    content: [input, h('div', { class: 'sheet-actions' }, del, saveBtn)],
   });
   requestAnimationFrame(() => autosize(input));
 }
@@ -132,6 +139,7 @@ function renderToday(view) {
     class: 'compose-input', rows: 2, maxLength: 2000, enterKeyHint: 'done', 'aria-label': 'What are you grateful for?',
   }));
   input.dataset.autofocus = '';
+  input.value = draft;
   const keep = /** @type {HTMLButtonElement} */ (h('button', { type: 'submit', class: 'pill pill-sand', disabled: true }, 'Keep it'));
 
   // No prompt unless asked. The first tap starts somewhere random; each tap after moves to the next.
@@ -163,10 +171,11 @@ function renderToday(view) {
         const text = input.value.trim();
         if (!text) return;
         /** @type {Entry} */
-        const e = { id: newId(), text, createdAt: Date.now() };
-        await db.put(e);
+        const e = { id: newId(), text, createdAt: Date.now(), updatedAt: Date.now() };
+        await save(e);
         entries.push(e);
         input.value = '';
+        draft = '';
         keep.disabled = true;
         autosize(input);
         const li = keptItem(e);
@@ -182,7 +191,9 @@ function renderToday(view) {
     },
   }, promptLine, input, h('div', { class: 'compose-actions' }, promptBtn, keep)));
 
-  input.addEventListener('input', () => { keep.disabled = !input.value.trim(); autosize(input); });
+  input.addEventListener('input', () => { draft = input.value; keep.disabled = !input.value.trim(); autosize(input); });
+  keep.disabled = !draft.trim();
+  if (draft) requestAnimationFrame(() => autosize(input));
   // Return keeps it; Shift+Return for a new line.
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
@@ -252,13 +263,48 @@ function renderPast(view) {
     h('nav', { class: 'data-links', 'aria-label': 'Your data' },
       h('button', { type: 'button', class: 'link', on: { click: exportJSON } }, 'Export'),
       h('span', { 'aria-hidden': 'true' }, '·'),
-      h('button', { type: 'button', class: 'link', on: { click: () => file.click() } }, 'Import')),
+      h('button', { type: 'button', class: 'link', on: { click: () => file.click() } }, 'Import'),
+      h('span', { 'aria-hidden': 'true' }, '·'),
+      h('button', { type: 'button', class: 'link', on: { click: openBackup } }, 'Backup link')),
     status, file,
   );
   if (db.memory) status.textContent = 'This browser isn’t saving. Export before you close it.';
 }
 
 // ---------- Data
+
+/** The backup link, and a place to paste one (a Home Screen app can't be opened by a link). */
+function openBackup() {
+  const link = backupLink();
+  const copy = h('button', {
+    type: 'button', class: 'pill',
+    on: { click: async () => { try { await navigator.clipboard.writeText(link); copy.textContent = 'Copied'; } catch { copy.textContent = 'Select it above to copy'; } } },
+  }, 'Copy link');
+  const paste = /** @type {HTMLInputElement} */ (h('input', { class: 'paste-input', type: 'url', placeholder: 'Paste a backup link', autocomplete: 'off', 'aria-label': 'Paste a backup link' }));
+  const msg = h('p', { class: 'notice', role: 'status' });
+  const use = h('button', {
+    type: 'button', class: 'btn-text',
+    on: {
+      click: async () => {
+        if (!(await adoptLink(paste.value))) { msg.textContent = 'That isn’t a backup link.'; return; }
+        await loadEntries();
+        close();
+        render({ keepScroll: true });
+      },
+    },
+  }, 'Use this link');
+  const close = openSheet({
+    title: 'Backup link',
+    content: [
+      h('p', { class: 'muted small' }, 'Your entries are backed up, encrypted, as you write. To bring them to a new phone, open this link there, or paste it below in Gratitude. Anyone with the link can read your entries, so keep it private.'),
+      h('p', { class: 'backup-link' }, link),
+      h('div', { class: 'sheet-actions' }, h('span'), copy),
+      h('p', { class: 'muted small' }, 'Moment’s link works here too: both apps then share one backup.'),
+      paste,
+      h('div', { class: 'sheet-actions' }, msg, use),
+    ],
+  });
+}
 
 async function exportJSON() {
   const body = JSON.stringify({ app: 'gratitude', version: 1, exportedAt: new Date().toISOString(), entries }, null, 2);
@@ -285,10 +331,12 @@ async function importJSON(text) {
   const have = new Set(entries.map((e) => e.id));
   /** @type {Entry[]} */
   const fresh = list
-    .filter((e) => e && typeof e.id === 'string' && typeof e.text === 'string' && e.text.trim() && Number.isFinite(e.createdAt) && !have.has(e.id))
-    .map((e) => ({ id: e.id, text: e.text, createdAt: e.createdAt, ...(Number.isFinite(e.updatedAt) ? { updatedAt: e.updatedAt } : {}) }));
+    .filter((e) => e && typeof e.id === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(e.id) && typeof e.text === 'string' && e.text.trim()
+      && Number.isFinite(e.createdAt) && !e.deleted && !have.has(e.id))
+    .map((e) => ({ id: e.id, text: e.text, createdAt: e.createdAt, updatedAt: Number.isFinite(e.updatedAt) ? e.updatedAt : e.createdAt, writer: writerId() }));
   if (fresh.length) {
     await db.putMany(fresh);
+    schedule();
     entries = [...entries, ...fresh].sort((a, b) => a.createdAt - b.createdAt);
   }
   return fresh.length;
@@ -296,15 +344,20 @@ async function importJSON(text) {
 
 // ---------- Shell
 
-/** @param {{keepScroll?:boolean}} [o] keepScroll after an edit, so Look back doesn't jump to the top */
+/** @param {{keepScroll?:boolean}} [o] keepScroll after an edit or a sync, so the page doesn't jump to the top */
 function render(o = {}) {
   const y = window.scrollY;
+  const typing = document.activeElement?.matches?.('.view textarea');
   const route = location.hash === '#/past' ? 'past' : 'today';
   const view = h('div', { class: 'view' });
   if (route === 'past') renderPast(view);
   else renderToday(view);
   clear(root).append(view);
-  if (o.keepScroll) { window.scrollTo(0, y); return; }
+  if (o.keepScroll) {
+    window.scrollTo(0, y);
+    if (typing) /** @type {HTMLElement|null} */ (view.querySelector('[data-autofocus]'))?.focus({ preventScroll: true });
+    return;
+  }
   window.scrollTo(0, 0);
   // Today opens with the cursor in the box; elsewhere focus the heading (VoiceOver).
   /** @type {HTMLElement|null} */ (view.querySelector('[data-autofocus]') || view.querySelector('h1'))?.focus({ preventScroll: true });
@@ -321,11 +374,25 @@ async function boot() {
   mountWater();
   setStyle(styleForDay(Date.now()));
   db = await openDB();
-  entries = await db.all();
+  await loadEntries();
   try { await navigator.storage?.persist?.(); } catch { /* best effort */ }
 
+  await startSync(db, async () => { await loadEntries(); render({ keepScroll: true }); });
+  // Opened from a backup link: take on that identity, then drop the secret from the address bar.
+  if (location.hash.startsWith('#/restore/')) {
+    const token = location.hash;
+    history.replaceState(null, '', '#/today');
+    if (await adoptLink(token)) await loadEntries();
+  }
   if (location.hash !== '#/past' && location.hash !== '#/today') history.replaceState(null, '', '#/today');
-  window.addEventListener('hashchange', () => render());
+  window.addEventListener('hashchange', async () => {
+    if (location.hash.startsWith('#/restore/')) {
+      const token = location.hash;
+      history.replaceState(null, '', '#/today');
+      if (await adoptLink(token)) await loadEntries();
+    }
+    render();
+  });
   // Coming back on a new day: start the day fresh.
   let shownDay = dayKey(Date.now());
   document.addEventListener('visibilitychange', () => {

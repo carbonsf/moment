@@ -168,6 +168,19 @@ h1:focus-visible, h2:focus-visible { outline: none; }
 }
 .notice { color: var(--c-sand); font-size: var(--fs-sm); text-align: center; }
 
+/* ---------- Backup link */
+.backup-link {
+  font-size: var(--fs-sm); word-break: break-all; color: var(--c-text-2);
+  background: var(--c-surface-2); padding: var(--sp-2) var(--sp-3); border-radius: var(--r-sm);
+  user-select: all; -webkit-user-select: all;
+}
+.paste-input {
+  width: 100%; min-height: var(--tap-min); padding: var(--sp-2) var(--sp-3);
+  background: var(--c-surface-2); border: 1px solid var(--c-border); border-radius: var(--r-sm);
+  font-size: max(16px, var(--fs-md));
+}
+.paste-input::placeholder { color: var(--c-text-3); }
+
 /* ---------- Sheet */
 .sheet-root { position: fixed; inset: 0; z-index: 10; display: flex; align-items: flex-end; justify-content: center; }
 .sheet-scrim { position: absolute; inset: 0; background: var(--c-scrim); opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }

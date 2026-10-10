@@ -3,7 +3,7 @@
 'use strict';
 
 // Bump on every deploy: the changed bytes are how browsers notice an update. The new version takes over on next launch.
-const CACHE_VERSION = 'gratitude-1.0.1';
+const CACHE_VERSION = 'gratitude-1.1.0';
 
 const PRECACHE = [
   './',
@@ -24,6 +24,8 @@ const PRECACHE = [
   './js/water.js',
   './js/gl.js',
   './js/shaders.js',
+  './js/crypto.js',
+  './js/sync.js',
 ];
 
 self.addEventListener('install', (event) => {
