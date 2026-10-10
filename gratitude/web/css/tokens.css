@@ -1,0 +1,77 @@
+/* Gratitude design tokens, taken from Moment's tokens.css. All visuals derive from these. */
+
+@font-face { font-family: 'PT Sans'; src: url('../fonts/PTSans-400.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'PT Sans'; src: url('../fonts/PTSans-700.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Ovo'; src: url('../fonts/Ovo-400.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+
+:root,
+:root[data-theme="dark"] {
+  /* Color: dark, desaturated, no pure black/white. */
+  --c-bg:            #121418;
+  --c-surface:       #1a1e24;
+  --c-surface-2:     #222831;
+  --c-border:        #2e3540;
+  --c-text:          #e9e6df;
+  --c-text-2:        #b3b8bf;
+  --c-text-3:        #8a9099;
+  --c-accent:        #8cc3cc;  /* the water */
+  --c-accent-ink:    #0f2a2e;
+  --c-sand:          #d2b98f;  /* your own words */
+  --c-focus:         #f0e2b6;
+  --c-scrim:         rgba(8,9,11,0.66);
+  --c-tide-ink:      #d6e4e6;  /* text that sits on water */
+  --c-tide-ink-2:    #a9bfc2;
+  --c-frost:         rgba(18,20,24,.55);
+  --c-frost-line:    rgba(140,195,204,.28);
+
+  /* Type */
+  --font-body: 'PT Sans', system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: 'Ovo', Georgia, serif;
+  --fs-xs:  .8125rem;
+  --fs-sm:  .9375rem;
+  --fs-md:  1rem;
+  --fs-lg:  1.25rem;
+  --fs-own: 1.375rem;
+  --fs-title: 1.9375rem;
+  --lh-body: 1.45;
+  --lh-head: 1.2;
+  --fw-regular: 400;
+  --fw-bold:    600;
+
+  /* Space: 4px base. */
+  --sp-1: .25rem;
+  --sp-2: .5rem;
+  --sp-3: .75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 2.5rem;
+  --sp-8: 3rem;
+
+  /* Shape */
+  --r-sm:   10px;
+  --r-md:   16px;
+  --r-lg:   24px;
+  --r-pill: 999px;
+
+  /* Layout */
+  --tap-min: 48px;
+  --content-max: 560px;
+  --gutter: 16px;
+
+  /* Motion */
+  --dur-fast: 180ms;
+  --dur-base: 320ms;
+  --dur-slow: 600ms;
+  --ease-out: cubic-bezier(.2,.7,.2,1);
+  --wave-rise: 4s;
+  --wave-fall: 6s;
+
+  color-scheme: dark;
+}
+
+:root[data-motion="reduce"] {
+  --dur-fast: 0ms;
+  --dur-base: 0ms;
+  --dur-slow: 0ms;
+}
